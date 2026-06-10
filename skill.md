@@ -1790,7 +1790,7 @@ PIT reports three metrics per class/package:
 
 ## Self-Optimization Hook (自动优化机制)
 
-After every PIT run on a NEW project (not already in [project-data.json](./project-data.json)), you MUST execute this self-optimization workflow. The skill learns from each project and grows its knowledge base automatically.
+After every completed PIT run — whether on a new project or an existing one — you MUST execute this self-optimization workflow. The skill learns from each project and grows its knowledge base automatically. **However, the version number only bumps ONCE per calendar day (Step 4).** Multiple self-optimization cycles within the same day share the same version number. The changelog accumulates all same-day changes under that single version entry.
 
 ### Step 1: Run the Post-Mortem Analysis
 
@@ -1869,43 +1869,49 @@ For each action identified in Step 2, apply the edit IMMEDIATELY after the PIT r
 
 ### Step 4: Determine Version Bump
 
-Follow **strict semantic versioning** (MAJOR.MINOR.PATCH). Current version is in [project-data.json](./project-data.json) → `skill_metadata.version`.
+Follow **strict semantic versioning** (vMAJOR.MINOR.PATCH). Current version is in [project-data.json](./project-data.json) → `skill_metadata.version`.
+
+**Version format: vMAJOR.MINOR.PATCH**
+- **v**: 版本前缀（Version 英文缩写），如 v1.0.0
+- **MAJOR (主版本号)**: 功能模块有较大变动，如增加模块或整体架构变化。由项目经理决定是否修改。
+- **MINOR (副版本号)**: 功能有一定增加或变化，如增加权限控制、自定义视图等。由项目经理决定是否修改。
+- **PATCH (修订版本号)**: Bug 修复或小变动，修复一个严重 Bug 即可发布。由项目经理决定是否修改。
 
 ```
-PATCH (X.Y.Z → X.Y.Z+1):  Bug fixes, corrections, stats-only updates
-  2.4.1 → 2.4.2: Fixed misleading description in Pattern 7
-  2.4.2 → 2.4.3: Corrected JUnit version in code example
+PATCH (vX.Y.Z → vX.Y.Z+1):  Bug fixes, corrections, stats-only updates
+  v2.4.1 → v2.4.2: Fixed misleading description in Pattern 7
+  v2.4.2 → v2.4.3: Corrected JUnit version in code example
 
-MINOR (X.Y.Z → X.Y+1.0):  New project case, new pattern, new test pattern
-  2.4.9 → 2.5.0: Added Anagram project + Pattern 20
-  2.5.0 → 2.6.0: Added 2 new killing techniques
+MINOR (vX.Y.Z → vX.Y+1.0):  New project case, new pattern, new test pattern
+  v2.4.9 → v2.5.0: Added Anagram project + Pattern 20
+  v2.5.0 → v2.6.0: Added 2 new killing techniques
 
-MAJOR (X.Y.Z → X+1.0.0):   Fundamental restructuring, breaking changes
-  2.6.0 → 3.0.0: Rewrote entire Survival Patterns classification
+MAJOR (vX.Y.Z → vX+1.0.0):   Fundamental restructuring, breaking changes
+  v2.6.0 → v3.0.0: Rewrote entire Survival Patterns classification
 ```
 
 **Version bump decision matrix:**
 
 | Delta Type | Bump | Example |
 |-----------|------|---------|
-| Stats update only (new project, no new patterns) | PATCH | 2.4.1 → 2.4.2 |
-| New project + confirmed existing patterns only | PATCH | 2.4.2 → 2.4.3 |
-| Minor correction to existing pattern text | PATCH | 2.4.3 → 2.4.4 |
-| New equivalent mutant pattern (Pattern N+1) | MINOR | 2.4.4 → 2.5.0 |
-| New killing technique (adds to Techniques section) | MINOR | 2.5.0 → 2.6.0 |
-| New test pattern in Test Patterns Catalog | MINOR | 2.6.0 → 2.7.0 |
-| New Iron Rule or workflow restructure | MINOR | 2.7.0 → 2.8.0 |
-| Multiple MINOR-level changes in one update | MINOR (once) | 2.5.0 → 2.6.0 |
-| Breaking restructuring of entire sections | MAJOR | 2.9.0 → 3.0.0 |
+| Stats update only (new project, no new patterns) | PATCH | v2.4.1 → v2.4.2 |
+| New project + confirmed existing patterns only | PATCH | v2.4.2 → v2.4.3 |
+| Minor correction to existing pattern text | PATCH | v2.4.3 → v2.4.4 |
+| New equivalent mutant pattern (Pattern N+1) | MINOR | v2.4.4 → v2.5.0 |
+| New killing technique (adds to Techniques section) | MINOR | v2.5.0 → v2.6.0 |
+| New test pattern in Test Patterns Catalog | MINOR | v2.6.0 → v2.7.0 |
+| New Iron Rule or workflow restructure | MINOR | v2.7.0 → v2.8.0 |
+| Multiple MINOR-level changes in one update | MINOR (once) | v2.5.0 → v2.6.0 |
+| Breaking restructuring of entire sections | MAJOR | v2.9.0 → v3.0.0 |
 
-**Rule:** When multiple changes happen in one session, bump ONCE to the highest applicable level. Never skip versions. 2.4.1 → 2.4.2 → 2.4.3 → ... → 2.4.9 → 2.5.0 is the only allowed sequence.
+**Rule:** Same-day session updates the version number ONLY ONCE. All changes within the same calendar day are grouped under a single version bump. When the day changes (next calendar day), the next self-optimization cycle triggers a new version bump. Read the latest version from project-data.json each time — never use a cached value. Version numbers are strictly sequential: v2.4.1 → v2.4.2 → v2.4.3 → ... → v2.4.9 → v2.5.0 is the only allowed sequence. Never skip versions.
 
 ### Step 5: Update CHANGELOG.md
 
 Append a changelog entry with the correct bumped version:
 
 ```
-## [{NEW_VERSION}] - {DATE}
+## [v{NEW_VERSION}] - {DATE}
 ### Added
 - {Project} project case study ({N} mutants, {X}% killed)
 - Pattern {N}: {name} ({category})
@@ -1952,7 +1958,7 @@ Append a changelog entry with the correct bumped version:
 
 In `skill_metadata.version`, set the new version string:
 ```json
-"version": "2.4.2"
+"version": "v2.4.2"
 ```
 And update `last_updated` to the current timestamp.
 

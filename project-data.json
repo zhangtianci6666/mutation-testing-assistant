@@ -1,8 +1,8 @@
 {
   "skill_metadata": {
     "name": "Mutation Testing Assistant",
-    "description": "基于20个Java项目、6683个变异体分析的PIT变异测试知识库",
-    "version": "2.6.5",
+    "description": "基于21个Java项目、6779个变异体分析的PIT变异测试知识库",
+    "version": "v2.5.0",
     "language": "Java",
     "framework": "JUnit 5 + PIT",
     "projects_analyzed": 21,
@@ -17,16 +17,9 @@
     "wrapper_project_coverage_ceiling": "65-75%",
     "framework_terminal_method_no_coverage": "~5%",
     "generated_at": "2026-06-02",
-    "last_updated": "2026-06-10T17:15:00+08:00",
+    "last_updated": "2026-06-10T18:00:00+08:00",
     "changelog": [
-      "v2.6.5: 新增Anagram项目(96 mutants, 80%) — 字符串变位词算法；确认优化守卫等价模式(5 REMOVE_CONDITIONALS在Helper类)+null≈emptySet等价(递归算法中EMPTY_RETURNS)+防御性null检查等价+for循环边界守卫等价",
-      "v2.6.4: 新增MethodHandle项目(490 mutants, 88%) — Java MethodHandle适配器框架；确认框架终端方法NO_COVERAGE模式；单文件聚合304测试覆盖19业务类",
-      "v2.6.3: README提示词编写指南新增完整章节(最小模板/约束示例/坏提示词对照表/ASCII盒子原则/内部执行流程图)",
-      "v2.6.2: 行为规则前移——新增LAUNCH SEQUENCE章节将4条核心规则提前到第2屏",
-      "v2.6.1: HARD GATE强化——新增EXECUTION PROTOCOL章节含违规示例+自检机制",
-      "v2.6.0: 新增Iron Rule 8(Zero Source Modification) + Iron Rule 9(Equivalent Mutant Accountability); Iron Rule 6重构为HARD GATE强制逐类PIT循环; 新增BEFORE YOU START类清单; Self-Optimization Hook扩展为7步含语义化版本(2.4.1→2.4.9→2.5.0)+README自动同步",
-      "v2.5.0: 新增FastJson项目(551 mutants, 68%) + Pattern 20包装器VOID等价 + 包装器项目覆盖率天花板识别",
-      "v2.4.1: 修复数据一致性(18项目/5642变异体/88.9%) + JUnit 5全量迁移 + 等价模式三分类重构 + 删除重复内容 + 新增README/CONTRIBUTING/CHANGELOG",
+      "v2.5.0: 同一天合并更新 — 新增FastJson/MethodHandle/Anagram 3个项目(共1137 mutants) + Pattern 20包装器VOID等价 + Iron Rule 8/9 + Self-Optimization Hook v2(含语义化版本规则: 同一天只更新一次版本号) + LAUNCH SEQUENCE + EXECUTION PROTOCOL + README提示词编写指南 + README/CONTRIBUTING/CHANGELOG文档体系",
       "v2.4.0: 新增BPlusTree项目(248 mutants, 85%) + 5个等价变异体模式(Pattern 15-19) + 4条B+Tree测试规则"
     ]
   },
@@ -149,14 +142,14 @@
   },
 
   "project_statistics": {
-    "_note": "Canonical project data. Summary of all 18 projects analyzed for this skill.",
+    "_note": "Canonical project data. Summary of all 21 projects analyzed for this skill.",
     "summary": {
-      "total_projects": 20,
-      "total_mutants": 6683,
-      "killed_mutants": 5248,
-      "survived_mutants": 1435,
-      "equivalent_mutants": 372,
-      "average_coverage_algorithmic": "87.2%",
+      "total_projects": 21,
+      "total_mutants": 6779,
+      "killed_mutants": 5325,
+      "survived_mutants": 1454,
+      "equivalent_mutants": 391,
+      "average_coverage_algorithmic": "86.8%",
       "average_coverage_gui": "25-60%",
       "wrapper_project_coverage_ceiling": "65-75%"
     },
