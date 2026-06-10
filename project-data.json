@@ -1,0 +1,173 @@
+{
+  "skill_metadata": {
+    "name": "Mutation Testing Assistant",
+    "description": "基于18个Java项目、5642个变异体分析的PIT变异测试知识库",
+    "version": "2.4.1",
+    "language": "Java",
+    "framework": "JUnit 5 + PIT",
+    "projects_analyzed": 18,
+    "total_mutants": 5642,
+    "killed_mutants": 4441,
+    "survived_mutants": 1201,
+    "equivalent_mutants": 220,
+    "average_coverage_algorithmic": "88.9%",
+    "average_coverage_gui": "25-60%",
+    "equivalent_mutant_rate_algorithmic": "2.5%",
+    "equivalent_mutant_rate_gui": "30-50%",
+    "generated_at": "2026-06-02",
+    "last_updated": "2026-06-10T12:00:00+08:00",
+    "changelog": [
+      "v2.4.1: 修复数据一致性(18项目/5642变异体/88.9%) + JUnit 5全量迁移 + 等价模式三分类重构 + 删除重复内容 + 新增README/CONTRIBUTING/CHANGELOG",
+      "v2.4.0: 新增BPlusTree项目(248 mutants, 85%) + 5个等价变异体模式(Pattern 15-19) + 4条B+Tree测试规则"
+    ]
+  },
+
+  "mutant_operators": {
+    "_note": "Canonical list of PIT mutators covered by this skill. Descriptions are one-line Chinese summaries for quick lookup.",
+    "supported": [
+      "CONDITIONALS_BOUNDARY_MUTATOR",
+      "VOID_METHOD_CALL_MUTATOR",
+      "MATH_MUTATOR",
+      "RETURN_VALS_MUTATOR",
+      "INCREMENTS_MUTATOR",
+      "INVERT_NEGS_MUTATOR",
+      "NEGATE_CONDITIONALS_MUTATOR",
+      "EMPTY_RETURNS_MUTATOR",
+      "NULL_RETURNS_MUTATOR",
+      "PRIMITIVE_RETURNS_MUTATOR",
+      "TRUE_RETURNS",
+      "FALSE_RETURNS",
+      "CONSTRUCTOR_CALLS_MUTATOR",
+      "REMOVE_CONDITIONALS_EQUAL_ELSE",
+      "REMOVE_CONDITIONALS_ORDER_ELSE",
+      "REMOVE_CONDITIONALS_EQUAL_IF"
+    ],
+    "descriptions": {
+      "CONDITIONALS_BOUNDARY_MUTATOR": "边界条件: > ↔ >=, < ↔ <=",
+      "VOID_METHOD_CALL_MUTATOR": "移除 void 方法调用",
+      "MATH_MUTATOR": "数学运算符: + ↔ -, * ↔ /, % ↔ * 等",
+      "RETURN_VALS_MUTATOR": "修改返回值 (null / 0 / false / empty 等)",
+      "INCREMENTS_MUTATOR": "++ ↔ --, i+=1 ↔ i-=1",
+      "INVERT_NEGS_MUTATOR": "-x → x, !a → a (反转负数和布尔否定)",
+      "NEGATE_CONDITIONALS_MUTATOR": "== ↔ !=, > ↔ <= 等条件取反",
+      "EMPTY_RETURNS_MUTATOR": "返回空值 (空字符串、空集合)",
+      "NULL_RETURNS_MUTATOR": "返回 null",
+      "PRIMITIVE_RETURNS_MUTATOR": "修改基本类型返回值 (返回 0、false)",
+      "TRUE_RETURNS": "将 boolean 返回值替换为 true",
+      "FALSE_RETURNS": "将 boolean 返回值替换为 false",
+      "CONSTRUCTOR_CALLS_MUTATOR": "移除 new 调用 (new X() → null)",
+      "REMOVE_CONDITIONALS_EQUAL_ELSE": "if(cond) → if(false) (总是走 else)",
+      "REMOVE_CONDITIONALS_ORDER_ELSE": "while(cond) → while(false) (跳过循环体)",
+      "REMOVE_CONDITIONALS_EQUAL_IF": "if(cond) → if(true) (总是走 if)"
+    }
+  },
+
+  "survival_patterns_index": {
+    "_note": "Quick lookup: pattern ID → name + frequency. Full details (description, examples, solution) are in skill.md Survival Patterns section.",
+    "patterns": [
+      {"id": "BOUNDARY_VALUE",           "name": "边界条件未触及",           "frequency": "高", "category": "killable"},
+      {"id": "VOID_CALL_REMOVAL",        "name": "Void方法调用移除",         "frequency": "高", "category": "killable"},
+      {"id": "UNCOLLECTED_BRANCH",       "name": "未覆盖分支",               "frequency": "高", "category": "killable"},
+      {"id": "CONSTANT_RETURN",          "name": "常量返回值",               "frequency": "中", "category": "killable"},
+      {"id": "MATH_EQUIVALENT",          "name": "数学运算等价",             "frequency": "中", "category": "killable"},
+      {"id": "LOOP_SIDE_EFFECT",         "name": "循环副作用",               "frequency": "低", "category": "killable"},
+      {"id": "INTERNAL_STATE",           "name": "内部状态差异",             "frequency": "中", "category": "killable"},
+      {"id": "ANIMATION_RESTORE",        "name": "动画状态恢复等价",         "frequency": "高", "category": "equivalent"},
+      {"id": "HEADLESS_TRAP",            "name": "Headless环境陷阱",        "frequency": "中", "category": "environment"},
+      {"id": "TERNARY_SYMMETRY",         "name": "三元最值对称性",           "frequency": "中", "category": "equivalent"},
+      {"id": "POLYMORPHIC_DEFAULT",      "name": "多态基类默认路径",         "frequency": "中", "category": "technique"},
+      {"id": "INFINITE_LOOP_TIMEOUT",    "name": "无限循环超时(有效杀死)",   "frequency": "低", "category": "valid_kill"},
+      {"id": "GENERIC_TYPE_MISMATCH",    "name": "泛型类型不匹配",           "frequency": "高", "category": "compile"},
+      {"id": "CAPACITY_EQUIVALENT",      "name": "ArrayList初始容量等价",    "frequency": "中", "category": "equivalent"},
+      {"id": "DEAD_COMPOUND_CONDITION",  "name": "复合条件死代码",           "frequency": "中", "category": "equivalent"},
+      {"id": "BINARY_SEARCH_BOUNDARY",   "name": "二分搜索边界等价",         "frequency": "中", "category": "equivalent"},
+      {"id": "SELF_CONSISTENT_METHOD",   "name": "自洽内部方法",             "frequency": "中", "category": "killable"},
+      {"id": "TREE_SPLIT_COVERAGE",      "name": "B+Tree分裂路径覆盖",      "frequency": "高", "category": "killable"},
+      {"id": "PROBABILISTIC_CONSTRUCTOR","name": "概率性构造器参数",         "frequency": "低", "category": "killable"}
+    ]
+  },
+
+  "killing_rules_index": {
+    "_note": "Operator → one-line strategy mapping for quick dispatch. Full code examples in skill.md Mutation Operators section.",
+    "rules": [
+      {"operator": "CONDITIONALS_BOUNDARY_MUTATOR",            "strategy": "精确边界值; 构造器屏蔽的边界用反射注入"},
+      {"operator": "VOID_METHOD_CALL_MUTATOR",                 "strategy": "验证副作用(状态/输出/异常); 链式void分场景覆盖; 动画用Counting Subclass"},
+      {"operator": "MATH_MUTATOR",                             "strategy": "不对称测试数据(避免0/1); 数组索引全遍历; 构造器参数断言对象内部字段"},
+      {"operator": "RETURN_VALS_MUTATOR",                      "strategy": "精确值断言(assertEquals); 禁止仅assertNotNull/assertTrue"},
+      {"operator": "INCREMENTS_MUTATOR",                       "strategy": "验证精确迭代次数; 断言循环变量最终值"},
+      {"operator": "INVERT_NEGS_MUTATOR",                      "strategy": "数值否定: 正负混合; 布尔否定: 测试true/false双分支"},
+      {"operator": "NEGATE_CONDITIONALS_MUTATOR",              "strategy": "覆盖条件true和false两个分支"},
+      {"operator": "EMPTY_RETURNS_MUTATOR",                    "strategy": "String/集合精确值断言; 禁止assertNotNull"},
+      {"operator": "NULL_RETURNS_MUTATOR",                     "strategy": "链式调用(.getX().getY())间接杀活null返回(NPE)"},
+      {"operator": "PRIMITIVE_RETURNS_MUTATOR",                "strategy": "精确值断言; 禁止assertTrue/assertFalse"},
+      {"operator": "TRUE_RETURNS",                             "strategy": "断言返回false的路径存在并测试"},
+      {"operator": "FALSE_RETURNS",                            "strategy": "断言返回true的路径存在并测试"},
+      {"operator": "CONSTRUCTOR_CALLS_MUTATOR",                "strategy": "断言字段非空且正确初始化"},
+      {"operator": "REMOVE_CONDITIONALS_EQUAL_ELSE",           "strategy": "覆盖if/else双分支; if分支产生可观测差异状态"},
+      {"operator": "REMOVE_CONDITIONALS_ORDER_ELSE",           "strategy": "使循环体执行2+次触发AIOOBE或错误状态"},
+      {"operator": "REMOVE_CONDITIONALS_EQUAL_IF",             "strategy": "构造else分支产生非默认值的场景"}
+    ]
+  },
+
+  "test_patterns_index": {
+    "_note": "Pattern name → source project mapping. Full code templates in skill.md Test Patterns Catalog.",
+    "patterns": [
+      {"name": "反射私有方法测试",           "source": "Square, Student-Grade-System"},
+      {"name": "输出捕获验证",               "source": "PathFinding, Library, FastestRoute"},
+      {"name": "参数化多配置测试",           "source": "Square, Library"},
+      {"name": "单例反射重置",               "source": "ElevatorManager"},
+      {"name": "JUnit 5 assertThrows 异常断言", "source": "UnrolledLinkedList2023, Square"},
+      {"name": "边界值测试套件",             "source": "Credit-Card-Validator"},
+      {"name": "并发修改检测",               "source": "UnrolledLinkedList2023"},
+      {"name": "深度遍历验证",               "source": "WeightBalancedTree2023, BPlusTree"},
+      {"name": "加密-解密循环验证",          "source": "Square"},
+      {"name": "反射边界值注入",             "source": "Nextday"},
+      {"name": "平台无关输出捕获",           "source": "Nextday"},
+      {"name": "数组索引全遍历杀活",         "source": "Nextday"},
+      {"name": "内部状态探查",               "source": "UnrolledLinkedList2023"},
+      {"name": "后向循环多迭代触发",         "source": "UnrolledLinkedList2023"},
+      {"name": "计数子类模式",               "source": "P_Queue"},
+      {"name": "构造函数参数MATH杀活",       "source": "P_Queue"},
+      {"name": "前置条件操纵边界",           "source": "P_Queue"},
+      {"name": "子类部分模拟",               "source": "P_Queue"},
+      {"name": "同包测试前提声明",           "source": "P_Queue"},
+      {"name": "匿名子类不覆写基类方法",     "source": "CMD"},
+      {"name": "反射Map状态注入",            "source": "CMD"},
+      {"name": "泛型便利方法类型声明",       "source": "CMD"},
+      {"name": "文件与URL双路径测试",       "source": "P_Queue"}
+    ]
+  },
+
+  "project_statistics": {
+    "_note": "Canonical project data. Summary of all 18 projects analyzed for this skill.",
+    "summary": {
+      "total_projects": 18,
+      "total_mutants": 5642,
+      "killed_mutants": 4441,
+      "survived_mutants": 1201,
+      "equivalent_mutants": 220,
+      "average_coverage_algorithmic": "88.9%",
+      "average_coverage_gui": "25-60%"
+    },
+    "projects": [
+      {"name": "CMD",                       "mutants": 72,   "coverage": "100%",  "type": "algorithmic",    "equivalent": 0,  "key_patterns": ["POLYMORPHIC_DEFAULT", "REFLECTION_MAP_STATE_INJECTION", "INFINITE_LOOP_TIMEOUT"]},
+      {"name": "Credit-Card-Validator",     "mutants": 255,  "coverage": "100%",  "type": "algorithmic",    "equivalent": 0},
+      {"name": "MementoX",                  "mutants": 180,  "coverage": "100%",  "type": "algorithmic",    "equivalent": 0},
+      {"name": "Nextday",                   "mutants": 98,   "coverage": "99%",   "type": "algorithmic",    "equivalent": 1},
+      {"name": "Research-Project-Mgmt",     "mutants": 333,  "coverage": "99%",   "type": "algorithmic",    "equivalent": 0},
+      {"name": "Student-Grade-System",      "mutants": 201,  "coverage": "99%",   "type": "algorithmic",    "equivalent": 0},
+      {"name": "SimpleAlgorithms",          "mutants": 440,  "coverage": "96%",   "type": "algorithmic",    "equivalent": 0},
+      {"name": "UnrolledLinkedList2023",    "mutants": 256,  "coverage": "91.8%", "type": "algorithmic",    "equivalent": 21},
+      {"name": "MonteCarlofor2048",         "mutants": 366,  "coverage": "89%",   "type": "algorithmic",    "equivalent": 0},
+      {"name": "SortFactory",               "mutants": 368,  "coverage": "89%",   "type": "algorithmic",    "equivalent": 0},
+      {"name": "PathFinding",               "mutants": 405,  "coverage": "88%",   "type": "algorithmic",    "equivalent": 0},
+      {"name": "BPlusTree",                 "mutants": 248,  "coverage": "85%",   "type": "algorithmic",    "equivalent": 13, "lines_covered": "299/305", "key_patterns": ["SELF_CONSISTENT_METHOD", "PROBABILISTIC_CONSTRUCTOR", "CAPACITY_EQUIVALENT", "DEAD_COMPOUND_CONDITION", "BINARY_SEARCH_BOUNDARY", "TREE_SPLIT_COVERAGE"]},
+      {"name": "Library",                   "mutants": 261,  "coverage": "85%",   "type": "algorithmic",    "equivalent": 0},
+      {"name": "FastestRoute",              "mutants": 219,  "coverage": "85%",   "type": "algorithmic",    "equivalent": 0},
+      {"name": "Square",                    "mutants": 449,  "coverage": "82%",   "type": "algorithmic",    "equivalent": 0},
+      {"name": "ElevatorManager",           "mutants": 268,  "coverage": "75%",   "type": "algorithmic",    "equivalent": 0},
+      {"name": "WeightBalancedTree2023",    "mutants": 191,  "coverage": "59%",   "type": "algorithmic",    "equivalent": 0},
+      {"name": "P_Queue",                   "mutants": 1032, "coverage": "33%",   "type": "gui/animation",  "equivalent": 185, "notes": "Animation State Restoration + Headless环境限制"}
+    ]
+  }
+}

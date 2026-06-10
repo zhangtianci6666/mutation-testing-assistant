@@ -1,0 +1,55 @@
+# === Maven ===
+target/
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+pom.xml.next
+release.properties
+dependency-reduced-pom.xml
+buildNumber.properties
+.mvn/timing.properties
+*.jar
+*.war
+*.ear
+
+# === PIT Mutation Testing ===
+pit-reports/
+**/pit-reports/
+mutations.xml
+
+# === IDE ===
+.idea/
+*.iml
+*.iws
+*.ipr
+.vscode/
+.settings/
+.project
+.classpath
+bin/
+out/
+
+# === OS ===
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+Desktop.ini
+
+# === Editor ===
+*.swp
+*.swo
+*~
+\#*\#
+.ropeproject/
+
+# === Claude Code (internal) ===
+.claude/
+
+# === Temp ===
+*.log
+*.tmp
+temp/
