@@ -1,22 +1,24 @@
 {
   "skill_metadata": {
     "name": "Mutation Testing Assistant",
-    "description": "基于18个Java项目、5642个变异体分析的PIT变异测试知识库",
-    "version": "2.4.1",
+    "description": "基于19个Java项目、6193个变异体分析的PIT变异测试知识库",
+    "version": "2.5.0",
     "language": "Java",
     "framework": "JUnit 5 + PIT",
-    "projects_analyzed": 18,
-    "total_mutants": 5642,
-    "killed_mutants": 4441,
-    "survived_mutants": 1201,
-    "equivalent_mutants": 220,
-    "average_coverage_algorithmic": "88.9%",
+    "projects_analyzed": 19,
+    "total_mutants": 6193,
+    "killed_mutants": 4815,
+    "survived_mutants": 1378,
+    "equivalent_mutants": 315,
+    "average_coverage_algorithmic": "87.3%",
     "average_coverage_gui": "25-60%",
-    "equivalent_mutant_rate_algorithmic": "2.5%",
+    "equivalent_mutant_rate_algorithmic": "3.0%",
     "equivalent_mutant_rate_gui": "30-50%",
+    "wrapper_project_coverage_ceiling": "65-75%",
     "generated_at": "2026-06-02",
-    "last_updated": "2026-06-10T12:00:00+08:00",
+    "last_updated": "2026-06-10T15:30:00+08:00",
     "changelog": [
+      "v2.5.0: 新增FastJson项目(551 mutants, 68%) + Pattern 20包装器VOID等价 + 包装器项目覆盖率天花板识别",
       "v2.4.1: 修复数据一致性(18项目/5642变异体/88.9%) + JUnit 5全量迁移 + 等价模式三分类重构 + 删除重复内容 + 新增README/CONTRIBUTING/CHANGELOG",
       "v2.4.0: 新增BPlusTree项目(248 mutants, 85%) + 5个等价变异体模式(Pattern 15-19) + 4条B+Tree测试规则"
     ]
@@ -83,7 +85,8 @@
       {"id": "BINARY_SEARCH_BOUNDARY",   "name": "二分搜索边界等价",         "frequency": "中", "category": "equivalent"},
       {"id": "SELF_CONSISTENT_METHOD",   "name": "自洽内部方法",             "frequency": "中", "category": "killable"},
       {"id": "TREE_SPLIT_COVERAGE",      "name": "B+Tree分裂路径覆盖",      "frequency": "高", "category": "killable"},
-      {"id": "PROBABILISTIC_CONSTRUCTOR","name": "概率性构造器参数",         "frequency": "低", "category": "killable"}
+      {"id": "PROBABILISTIC_CONSTRUCTOR","name": "概率性构造器参数",         "frequency": "低", "category": "killable"},
+      {"id": "WRAPPER_VOID_EQUIVALENCE", "name": "包装器VOID调用等价",      "frequency": "高", "category": "equivalent"}
     ]
   },
 
@@ -141,13 +144,14 @@
   "project_statistics": {
     "_note": "Canonical project data. Summary of all 18 projects analyzed for this skill.",
     "summary": {
-      "total_projects": 18,
-      "total_mutants": 5642,
-      "killed_mutants": 4441,
-      "survived_mutants": 1201,
-      "equivalent_mutants": 220,
-      "average_coverage_algorithmic": "88.9%",
-      "average_coverage_gui": "25-60%"
+      "total_projects": 19,
+      "total_mutants": 6193,
+      "killed_mutants": 4815,
+      "survived_mutants": 1378,
+      "equivalent_mutants": 315,
+      "average_coverage_algorithmic": "87.3%",
+      "average_coverage_gui": "25-60%",
+      "wrapper_project_coverage_ceiling": "65-75%"
     },
     "projects": [
       {"name": "CMD",                       "mutants": 72,   "coverage": "100%",  "type": "algorithmic",    "equivalent": 0,  "key_patterns": ["POLYMORPHIC_DEFAULT", "REFLECTION_MAP_STATE_INJECTION", "INFINITE_LOOP_TIMEOUT"]},
@@ -167,7 +171,8 @@
       {"name": "Square",                    "mutants": 449,  "coverage": "82%",   "type": "algorithmic",    "equivalent": 0},
       {"name": "ElevatorManager",           "mutants": 268,  "coverage": "75%",   "type": "algorithmic",    "equivalent": 0},
       {"name": "WeightBalancedTree2023",    "mutants": 191,  "coverage": "59%",   "type": "algorithmic",    "equivalent": 0},
-      {"name": "P_Queue",                   "mutants": 1032, "coverage": "33%",   "type": "gui/animation",  "equivalent": 185, "notes": "Animation State Restoration + Headless环境限制"}
+      {"name": "P_Queue",                   "mutants": 1032, "coverage": "33%",   "type": "gui/animation",  "equivalent": 185, "notes": "Animation State Restoration + Headless环境限制"},
+      {"name": "FastJson",                  "mutants": 551,  "coverage": "68%",   "type": "wrapper",        "equivalent": 95,  "lines_covered": "866/966", "notes": "Alibaba fastjson 1.2.70包装器 - VOID_METHOD_CALL在库内部对象上等价 + 包装器项目覆盖率天花板~68%", "key_patterns": ["WRAPPER_VOID_EQUIVALENCE", "ASSERT_SAME_FOR_INSTANCEOF", "ORDERED_MAP_INSERTION_ORDER"]}
     ]
   }
 }

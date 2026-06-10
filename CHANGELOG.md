@@ -7,6 +7,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [2.5.0] - 2026-06-10
+
+### Added
+- **FastJson 项目** (551 mutants, 68% killed) — Alibaba fastjson 1.2.70 包装器项目实战案例
+- **Pattern 20: Wrapper-Project VOID Equivalence** — 包装器项目中最常见的等价变异体模式
+  - 24/82 VOID_METHOD_CALL 在库内部对象上等价 (parser.close, handleResovleTask)
+  - 识别方法：库对象是局部变量 + 不存储在字段中 + 方法返回后丢弃 = void 调用等价
+- **包装器项目覆盖率天花板** — 新概念：不同类型项目有不同的覆盖率上限
+  - 包装器项目: ~65-75% / 算法项目: ~85-95% / GUI项目: ~25-60%
+- **3 个新测试技术:** assertSame 杀 instanceof 条件, NonStandardBean invoke 分支, 有序Map构造器验证
+- **4 条新 Common Mistakes 条目** — 包装器VOID等价、assertSame技术、包装器vs叶子null检查、项目类型天花板
+- **FastJson Post-Mortem** — 177 幸存变异体分类 (95 真等价 + 44 不可达 + 38 环境限制)
+
+### Changed
+- 项目数: 18→19, 变异体总数: 5,642→6,193, 算法平均覆盖率: 88.9%→87.3%
+
+### Verified
+- Pattern 1-19 全部被 FastJson 项目再次验证
+- 包装器项目等价率: ~32% (177/551) — 远高于算法项目 ~2.5%
+
+---
+
 ## [2.4.1] - 2026-06-10
 
 ### Fixed
