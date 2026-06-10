@@ -7,6 +7,100 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [2.6.5] - 2026-06-10
+
+### Added
+- **Anagram 项目** (96 mutants, 80% killed) — 字符串变位词求解器实战案例
+  - 3 个业务类 (Helper/Dictionary/Anagram) / 80 个测试全部聚合在单一文件中
+  - 递归算法中系统性的优化守卫等价确认：5处REMOVE_CONDITIONALS是纯性能优化，核心算法提供独立正确的backstop
+  - null ≈ emptySet 等价确认：递归算法中EMPTY_RETURNS的null和空Set在所有调用方行为一致
+  - 防御性null检查等价：3处方法的参数null检查，调用方已保证非null
+  - for循环CONDITIONALS_BOUNDARY等价：额外迭代被递归守卫条件截获返回null
+  - 死代码NO_COVERAGE：usage()私有方法无人调用
+
+### Changed
+- 项目数: 20→21, 变异体总数: 6,683→6,779, 等价变异体数: 372→391
+- 算法类平均覆盖率: 87.2%→86.8%
+
+### Verified
+- Pattern 1 (Dominated Condition): Helper L42/L99/L104/L109 的优化守卫被再次确认
+- Pattern 6 (Defensive Redundancy): Anagram L116/L133/L138 的防御性null检查被再次确认
+- Pattern 20 (Wrapper VOID): Dictionary L85 reader.close() 局部变量VOID等价被再次确认
+- EMPTY_RETURNS null≈emptySet 模式：递归算法中调用方的 `!= null && !isEmpty()` 双检查使两者语义等价
+
+---
+
+## [2.6.4] - 2026-06-10
+
+### Added
+- **MethodHandle 项目** (490 mutants, 88% killed) — Java MethodHandle 适配器框架 (invokebinder) 实战案例
+  - 19 个业务类 / 304 个测试全部聚合在单一文件中
+  - 框架终端方法 NO_COVERAGE 模式确认：invoke*/getField/setField 方法需要应用上下文，单测不可达
+  - Transform.up() 类型匹配屏障确认：MethodHandles API 的严格类型要求使 Catch/Fold/TryFinally.up() 在单测中极难覆盖
+  - 构造器歧义模式确认：varargs 构造器重载在 Java 中永久歧义，不可达
+
+### Changed
+- 项目数: 19→20, 变异体总数: 6,193→6,683, 等价变异体数: 315→372
+- 算法类平均覆盖率: 87.3%→87.2%
+- project-data.json 新增 `framework_terminal_method_no_coverage: ~5%` 指标
+
+### Verified
+- Pattern 1 (Dominated Condition): Cast/Convert 中 `returnType == void.class` 条件被再次确认
+- Pattern 7 (Counter Monotonicity): 循环迭代器 i++↔i-- 在 Collect/Permute 中被再次确认
+- Pattern 20 (Wrapper VOID): 内部 List.add/Binder::add 的 VOID 移除被确认为等价
+- Pattern 3 (Unconditional Return): Insert.types() 私有方法返回值在所有路径下相同
+
+---
+
+## [2.6.3] - 2026-06-10
+
+### Added
+- **README 提示词编写指南** — 新增完整章节：最小提示词模板、带约束提示词示例、坏提示词对照表、提示词原则（ASCII盒子）、Skill 内部执行流程图
+
+---
+
+## [2.6.2] - 2026-06-10
+
+### Changed
+- **行为规则前移** — 新增 🚀 LAUNCH SEQUENCE（第67行），将逐类执行/PIT优先/源码零修改/编译验证 4 条核心规则从第1181行 Workflow 提前到第2屏。AI 不需要读完 1100 行知识就能被约束
+- 修复 `## Quick Reference` 标题被错误替换为重复的 `## When to Use`
+
+---
+
+## [2.6.1] - 2026-06-10
+
+### Fixed
+- **HARD GATE 仍被跳过** — AI 仍输出 "covering all N business classes"。修复：在 Overview 后新增 ⛔ EXECUTION PROTOCOL 章节（最显眼位置），含违规示例 + 自检机制 + 单文件特殊说明。BEFORE YOU START 新增 @Test 注解计数自检和 "SAY OUT LOUD" 确认步骤
+
+---
+
+## [2.6.0] - 2026-06-10
+
+### Added
+- **Iron Rule 8: Zero Source Modification** — 严禁修改源码/配置/pom.xml，只能新增测试代码。不可杀死时须文档化等价变异体
+- **Iron Rule 9: Equivalent Mutant Accountability** — 等价变异体精确评估标准表格（变异算子+行号+逻辑证明+模式匹配），禁止笼统描述
+- **BEFORE YOU START 强制类清单** — 写测试前必须先列出所有业务类、按复杂度排序、标记当前处理类🔄
+- **PER-CLASS GATE** — 每个类完成后的强制检查点（复选框格式），禁止在PIT确认前推进到下一个类
+- **Self-Optimization Hook v2** — 从4步扩展为7步：新增 Step 4 语义化版本规则、Step 6 README.md 自动同步、Step 7 project-data.json 版本更新
+- **语义化版本规则** — PATCH (修正) / MINOR (新模式/项目) / MAJOR (重构)，版本严格递增：2.4.1→2.4.2→...→2.4.9→2.5.0
+- **README 自动同步清单** — 10 个必更新字段的 checklist
+
+### Changed
+- **Iron Rule 6: HARD GATE 重构** — 从散文描述改为 ASCII 盒子强制逐类 PIT 循环，明确违规后果（删除多余测试、重新开始）
+- **Step-by-Step Workflow** — 重命名为 Per-Class Loop，强调不可批处理多个类
+- **Self-Optimization Hook** — 重写 Step 2 为决策矩阵、新增版本号决策表、Delta Detection 增加 Version 列
+- **README.md** — 全局数字与 skill.md 同步（18→19 项目、19→20 模式、21→23 测试模式、11→14 等价模式、7→9 Iron Rules、1475→1863 行）
+
+### Fixed
+- Iron Rule 6 被跳过：AI 写完所有类测试才跑 PIT → 改为 HARD GATE 强制执行
+- Self-Optimization 缺少 README 同步机制 → 新增 Step 6
+- 版本号无规则 → 新增语义化版本规则
+- README 数字与 skill.md 不一致（Iron Rules 7 vs 9、模式数 19 vs 20 等）
+
+---
+
+## [2.5.0] - 2026-06-10
+
 ## [2.5.0] - 2026-06-10
 
 ### Added
