@@ -1,6 +1,6 @@
 # Mutation Testing Assistant
 
-> 基于 21 个 Java 项目、6,779 个变异体实战经验提炼的 PIT 变异测试知识库——系统化分析存活变异体、识别等价变异体、编写杀活测试。
+> 基于 24 个 Java 项目、7,713 个变异体实战经验提炼的 PIT 变异测试知识库——系统化分析存活变异体、识别等价变异体、编写杀活测试。
 
 [![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](LICENSE)
 [![Java](https://img.shields.io/badge/Java-8%2B-orange)](https://adoptium.net/)
@@ -11,11 +11,11 @@
 
 ## 这是什么？
 
-一套完整的 **PIT 变异测试实战方法论**，提炼自 21 个真实 Java 项目的变异测试经验——涵盖算法类（B+Tree、链表、加密、排序、变位词）、CLI 解析器、GUI/Animation、包装器/库封装、框架适配器等多种项目类型。帮助 Java 开发者：
+一套完整的 **PIT 变异测试实战方法论**，提炼自 24 个真实 Java 项目的变异测试经验——涵盖算法类（B+Tree、链表、加密、排序、变位词、Brainfuck解释器）、CLI 解析器、GUI/Animation、包装器/库封装、框架适配器等多种项目类型。帮助 Java 开发者：
 
 - 🎯 **快速定位**——将存活变异体匹配到 20 个已知存活模式
 - ⚡ **精准杀活**——使用 23 个测试模式 + 反射/内部状态探查等高级技巧
-- 🛡️ **避免浪费**——识别 14 种真等价变异体，不投入无效测试
+- 🛡️ **避免浪费**——识别 13 种真等价变异体，不投入无效测试
 - 📊 **读懂指标**——理解 Line Coverage / Mutation Coverage / Test Strength 的关系
 
 ## 快速上手
@@ -127,36 +127,44 @@ Skill 会自动：列出类清单 → 逐类写测试 → 编译 → PIT → 分
 
 ## 内容导航
 
-完整文档见 [skill.md](./skill.md)（1956 行），关键章节：
+采用三层加载模型控制Token消耗：
 
-| 章节 | 内容 |
-|------|------|
-| [Quick Reference](./skill.md#quick-reference-survival-patterns) | 20 个存活模式速查表 |
-| [Mutation Operators](./skill.md#mutation-operators--killing-rules) | 9 大变异算子 + 杀活策略 + 代码示例 |
-| [Survival Patterns](./skill.md#survival-patterns--killing-strategies) | 20 个模式分三类：🟰 真等价 / 🔧 可杀死 / 🛠️ 杀活技巧 |
-| [Test Patterns Catalog](./skill.md#test-patterns-catalog-从18个项目提取) | 23 个测试模式 + 代码模板 |
-| [B+Tree Testing](./skill.md#btree--recursive-data-structure-testing-rules) | B+Tree 专项：t值选择、增量构建、断言升级阶梯 |
-| [GUI Testing](./skill.md#awtgui-class-testing-rules) | AWT/Animation：Headless兼容、Counting Subclass、动画等价识别 |
-| [Case Studies](./skill.md#project-case-studies-21个项目实战经验) | 21 个项目实战复盘 |
-| [Workflow](./skill.md#workflow) | 9 条 Iron Rules + 22 步完整工作流 + Per-Class Gate |
-| [Common Mistakes](./skill.md#common-mistakes) | 40+ 个高频踩坑点 |
-| [PIT Metrics](./skill.md#interpreting-pit-metrics) | Line Coverage / Mutation Coverage / Test Strength 诊断指南 |
-| [Self-Optimization](./skill.md#self-optimization-hook-自动优化机制) | 自动优化机制：Post-Mortem → Delta Detection → 版本迭代
+```
+Tier 1 (Always):    description 字段 → 永远在上下文中
+Tier 2 (Trigger):   SKILL.md (281行) → 核心协议 + 路由表，触发时加载
+Tier 3 (On-Demand): references/*.md  → 详细内容，用到才读
+```
+
+### 路由表（SKILL.md，281 行）
+
+SKILL.md 不包含详细内容，而是告诉模型**什么时候去读哪个文件**：
+
+| 遇到什么情况 | 读哪个文件 |
+|-------------|-----------|
+| 变异体匹配到某个模式，需要详情 | [survival-patterns.md](references/survival-patterns.md) — 20个模式：症状、根因、代码、行动 |
+| 需要某种操作符的杀活代码 | [killing-strategies.md](references/killing-strategies.md) — 11种操作符 + 快速杀活决策树 |
+| 需要特定测试技巧（反射、计数子类等） | [test-patterns-catalog.md](references/test-patterns-catalog.md) — 23个测试模式 + 代码 |
+| 处理 B+Tree / 递归数据结构 | [bplustree-testing.md](references/bplustree-testing.md) — t值选择、断言升级阶梯 |
+| 处理 AWT/Swing/GUI 类 | [awt-gui-testing.md](references/awt-gui-testing.md) — Headless兼容、Graphics mock |
+| 想对测试做 sanity check | [common-mistakes.md](references/common-mistakes.md) — 40+常见错误 + 30+红旗检查 |
+| 需要解读 PIT 报告指标 | [pit-metrics.md](references/pit-metrics.md) — 覆盖率统计、诊断矩阵 |
+| 想参考类似项目经验 | [project-case-studies.md](references/project-case-studies.md) — 21个项目深度复盘 |
+| PIT 跑完后（自动优化） | [self-optimization.md](references/self-optimization.md) — 7步Post-Mortem工作流
 
 ## 项目数据
 
-来自 21 个 Java 项目的真实变异测试数据：
+来自 24 个 Java 项目的真实变异测试数据：
 
 | 指标 | 数值 |
 |------|------|
-| 分析项目数 | 21 |
-| 总变异体数 | 6,779 |
-| 算法类平均覆盖率 | 86.8% |
-| 等价变异体数 | 391 |
+| 分析项目数 | 23 |
+| 总变异体数 | 7,186 |
+| 算法类平均覆盖率 | 87.3% |
+| 等价变异体数 | 430 |
 | GUI/Animation 可测上限 | 25-60% |
 | 包装器/库封装类可测上限 | 65-75% |
 
-详见 [project-data.json](./data/project-data.json)
+详见 [project-data.json](./project-data.json)
 
 ## 贡献
 

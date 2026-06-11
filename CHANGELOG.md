@@ -7,6 +7,64 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [v2.5.4] - 2026-06-11
+
+### Added
+- **Brainfuck 解释器项目** (145 mutants, 83% killed, 98% line) — 3个Brainfuck衍生语言解释器引擎
+
+### Changed
+- **P5 Dead Store 细化**: 新增 initate() 重置模式 — 当方法末尾调用重置方法清空所有中间状态时，所有中间运算的 MATH/CONDITIONALS_BOUNDARY 均等价
+- **P6 Defensive Redundancy 细化**: 新增自修正括号匹配变体 — BK_RIGHT 后向扫描补偿 BK_LEFT 移除，双层守卫使单个条件移除不可观察
+- **P10 Ternary Symmetry 细化**: 新增 substring 边界场景 — `cp+dTL==len` 时 if/else 两分支产生相同子串
+
+### Verified
+- initate() 重置模式: 3个类中8个MATH + 4个BOUNDARY 均因 reset 而等价
+- BK_RIGHT 后向扫描自修正: 13个 REMOVE_CONDITIONALS 因双层守卫等价
+- 单文件聚合策略: 110测试集中在1个 *Test.java 文件，验证 Iron Rule 6 在单文件约束下可行
+- 25个幸存变异体全部通过P1-P20模式匹配验证为等价
+
+---
+
+## [v2.5.3] - 2026-06-11
+
+### Added
+- **LunarCalendar 项目** (527 mutants, 90% killed, 99% line) — 农历日历库，8个类
+- **Test Pattern 23: Public API Over Reflection** — PIT 反射覆盖不稳定问题的解决方案
+- **Self-Optimization Hook v3: 项目完成全量审计** — 项目完成后必须审查所有 reference 文件，不仅增添还要修正
+
+### Changed
+- **P6 防御式冗余细化**: 新增懒加载变体（setter被downstream getter的lazy-load覆盖）
+- **common-mistakes.md**: 新增2条红牌警告——反射PIT覆盖不稳定 + 公共API优先于反射
+- **killing-strategies.md**: 新增多t值精确断言技术（天文/三角MATH）
+- **test-patterns-catalog.md**: Pattern 23 公共API优先模式
+- **SKILL.md Quick Reference P6**: 描述扩展包含懒加载变体
+- **全量统计更新**: 23项目、7568变异体、23测试模式、87.7%覆盖率
+
+### Verified
+- PIT反射覆盖不稳定: `Method.invoke()` 杀死的VOID_METHOD_CALL在后续运行复活 → 已确认并收录
+- 多t值技术: t=-1,0,1,2 四组输入确保任一天文MATH至少在一组产生差异
+- P6懒加载变体: DPCManager.setFestivals与getFestivals懒加载完全冗余
+- 所有20个存活模式跨23个项目验证有效
+
+---
+
+## [v2.5.1] - 2026-06-11
+
+### Added
+- **Hotel 酒店管理系统项目** (262 mutants, 94% killed) — 状态机+排序+价格计算综合业务类实战案例
+  - 13个业务类、单文件聚合~228测试
+  - 8个类达100%、7个变异算子达100% (含MATH 44/44)
+  - 发现 `setPrice()` 去耦技术：用setter覆写构造器自动关联的价格来击杀 getValue() 中与类型/状态相关的 MATH 变异体 (Pattern 18细化)
+
+### Verified
+- **P1 支配条件**: `contains("00")` 支配 `≤100`、外循环被内循环支配 (Hotel sortByValue)
+- **P16 复合死代码**: 字符范围 `(a-z)||(A-Z)` 中的OR逻辑支配
+- **P20 包装器VOID等价**: `setItems()` 冗余调用 (已由构造器设置)、空 `println()` 无功能影响
+- **P2 算术恒等**: 比较器中 `return 1` 与 `return 0` 在else分支功能等同
+- 14个确定性等价变异体被识别并记录
+
+---
+
 ## [v2.5.0] - 2026-06-10
 
 ### Added
