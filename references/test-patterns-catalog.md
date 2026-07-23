@@ -1,4 +1,4 @@
-# Test Patterns Catalog (从22个项目提取)
+# Test Patterns Catalog (从24个项目提取)
 
 22 reusable test patterns for killing specific mutation types. Each pattern includes source project, use case, and code example.
 
@@ -391,4 +391,56 @@ public void testViaPublicAPI() {
 1. 优先公共 API 路径 → 2) 同包 package-private 直接访问 → 3) 反射作为最后手段
 2. 如果反射是唯一选择，接受 PIT 报告可能因运行而异
 3. 对静态内部方法，如果测试类与被测类同包，直接调用 package-private 方法而非反射
+
+---
+
+### Pattern 24: Single-File Aggregation with @Nested Classes
+
+**适用场景:** 用户要求在单个测试文件中聚合所有业务类的变异测试，禁止拆分多文件。
+
+**代码示例:**
+```java
+class MutationTest {
+    @Nested @DisplayName("TaskPolicy") class TaskPolicyTests { /* ~50 tests */ }
+    @Nested @DisplayName("TaskStateMachine") class TaskStateMachineTests { /* ~20 tests */ }
+    @Nested @DisplayName("AttendancePolicy") class AttendancePolicyTests { /* ~30 tests */ }
+    // ... 10+ more @Nested classes for all business classes
+}
+```
+
+**关键规则:**
+1. 使用 `@Nested` + `@DisplayName` 组织每个业务类的测试
+2. 在顶层类中定义共享工厂方法（private static helpers）
+3. 使用完全限定类名避免 import 冲突和编译问题
+4. 每个 `@Nested` 类可拥有自己的 `@BeforeEach`/helper 方法
+5. 保持所有测试在单个 `.java` 文件中 — 禁止创建额外测试文件
+
+**适用于:** 需要单文件交付的考试/比赛项目。
+
+---
+
+### Pattern 25: JaCoCo + PIT Dual Coverage Analysis
+
+**适用场景:** 需要同时达成行/分支/方法覆盖率（JaCoCo）和变异覆盖率（PIT）目标。
+
+**分析流程:**
+1. **先 PIT** → 识别存活变异体 → 杀死 → 循环直到瓶颈
+2. **同时 JaCoCo** → 读取 `.java.html` 源级报告 → 精确找到未覆盖的 RED（行）和 YELLOW（分支）
+3. **JaCoCo 用于行/分支**: 所有红色行 = 需要测试；黄色行 = 部分分支未覆盖
+4. **PIT 用于变异**: SURVIVED = 测试不够强；NO_COVERAGE = 行未覆盖
+
+**互补性:**
+| 维度 | JaCoCo | PIT |
+|-----|--------|-----|
+| 行覆盖 | ✅ 精确 | 近似 |
+| 分支覆盖 | ✅ 每个分支 | ❌ |
+| 方法覆盖 | ✅ | ❌ |
+| 测试质量 | ❌ | ✅ |
+| 等价体检测 | ❌ | ✅ |
+
+**关键规则:**
+1. 先达成 JaCoCo 100% 方法/类覆盖（快速胜利）
+2. 再追求分支覆盖 → 读 `.java.html` 找到每个黄色行
+3. 最后用 PIT 杀死剩余变异体
+4. `mvn test` 后 JaCoCo 报告在 `target/site/jacoco/index.html`
 

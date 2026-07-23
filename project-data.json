@@ -1,30 +1,32 @@
 {
   "skill_metadata": {
     "name": "Mutation Testing Assistant",
-    "description": "基于24个Java项目、7713个变异体分析的PIT变异测试知识库",
-    "version": "v2.5.4",
+    "description": "基于25个Java项目、10113个变异体分析的PIT变异测试知识库",
+    "version": "v2.6.1",
     "language": "Java",
     "framework": "JUnit 5 + PIT",
-    "projects_analyzed": 24,
-    "total_mutants": 7713,
-    "killed_mutants": 6167,
-    "survived_mutants": 1546,
-    "equivalent_mutants": 438,
-    "average_coverage_algorithmic": "87.7%",
+    "projects_analyzed": 25,
+    "total_mutants": 10113,
+    "killed_mutants": 7688,
+    "survived_mutants": 2425,
+    "equivalent_mutants": 498,
+    "average_coverage_algorithmic": "87.3%",
     "average_coverage_gui": "25-60%",
     "equivalent_mutant_rate_algorithmic": "3.0%",
     "equivalent_mutant_rate_gui": "30-50%",
     "wrapper_project_coverage_ceiling": "65-75%",
     "framework_terminal_method_no_coverage": "~5%",
     "generated_at": "2026-06-02",
-    "last_updated": "2026-06-11T15:10:00+08:00",
+    "last_updated": "2026-07-23T17:30:00+08:00",
     "changelog": [
-      "v2.5.4: 新增Brainfuck解释器项目(145 mutants, 83% kill, 98% line, 3类) — 验证单文件聚合策略+initate()重置模式引发大量P5等价 + BK_RIGHT后向扫描自修正括号匹配(P6新变体) + cp+dTL==len边界substring对称(P10新场景) + 25个SURVIVED全部验证为等价(无新模式)",
-      "v2.5.3: 新增LunarCalendar项目(527 mutants, 90% kill, 99% line, 8类4个100%) — 发现PIT反射覆盖不稳定问题(反射杀死的变异体会复活) + 多t值精确断言技术(t=-1,0,1,2杀死天文MATH) + 公共API优于反射原则 + DPCManager.setFestivals确认为真P6(与getFestivals懒加载冗余) + common-mistakes新增2条PIT反射警告 + killing-strategies新增多t值技术",
-      "v2.5.2: 强化执行协议 — RULE 0新增禁止行为清单 + Iron Rule 9强制WHY解释(必须解释每个幸存变异体为何不能杀死) + PER-CLASS GATE新增杀戮技术耗尽清单 + 分析阶段新增步骤0(列出每个幸存者并解释WHY) + 启动规则新增第5条(强制WHY) + 禁止模糊等价判定('probably equivalent'不再被接受)",
-      "v2.5.1: 新增Hotel酒店管理系统项目(262 mutants, 94%) — 6个算子100%、8个类100% + 发现setPrice()去耦技术用于击杀构造器关联MATH(Pattern 18细化) + P1支配条件(contains支配≤) + P16复合死码(字符范围OR支配) + P20 VOID等价(setItems冗余+println空行) 全部验证",
-      "v2.5.0: 同一天合并更新 — 新增FastJson/MethodHandle/Anagram 3个项目(共1137 mutants) + Pattern 20包装器VOID等价 + Iron Rule 8/9 + Self-Optimization Hook v2(含语义化版本规则: 同一天只更新一次版本号) + LAUNCH SEQUENCE + EXECUTION PROTOCOL + README提示词编写指南 + README/CONTRIBUTING/CHANGELOG文档体系",
-      "v2.4.0: 新增BPlusTree项目(248 mutants, 85%) + 5个等价变异体模式(Pattern 15-19) + 4条B+Tree测试规则"
+      "v2.6.1: 新增Online-Edu在线教育平台项目(1388 mutants, 43% mutation/34%→43%, 85% line, 9业务类) — Spring Boot 3.5服务架构(6大型Service:考试评分/学习进度/报名资格审查/退款策略/高级定价/排课调度 + 3小型Service:价格策略/课程管理/目录服务)；单文件聚合~5400行450+测试；PIT从4%→34%→43%，JaCoCo从9%→72%→85%行/73%分支/96%方法；小型类全部100%；发现包级私有Spring @Bean反射覆盖技术；Record紧凑构造器List.copyOf拒绝null导致验证死分支；验证主导死分支(P1: maximumPoints.signum()==0被前置验证屏蔽)；common-mistakes新增3条(Mockito.when非mock对象、类型推断Set.of()/List.of()、sed批处理破坏Java源码)",
+      "v2.6.0: 新增OASYS考勤/费用/权限/工作流系统项目(1012 mutants, 55% mutation, 93% line, 19类) — 大型企业应用(14+业务类,561杀)单文件聚合~500测试；发现P21等级乘数开关缺口(switch-enum中间值未覆盖)+P22 Record紧凑构造器方法调用NPE(字段未赋值前访问)；新增TP24单文件@Nested聚合模式+TP25 JaCoCo+PIT双分析；Maven source level覆盖问题(显式-Dmaven.compiler.source=21)；common-mistakes新增6条；方法/类覆盖达到100%",
+      "v2.5.4: 新增Brainfuck解释器项目(145 mutants, 83% kill, 98% line, 3类)",
+      "v2.5.3: 新增LunarCalendar项目(527 mutants, 90% kill) + PIT反射覆盖不稳定问题",
+      "v2.5.2: 强化执行协议 RULE 0 + Iron Rule 9强制WHY解释",
+      "v2.5.1: 新增Hotel酒店管理系统项目(262 mutants, 94%)",
+      "v2.5.0: 新增FastJson/MethodHandle/Anagram 3个项目(共1137 mutants) + Pattern 20",
+      "v2.4.0: 新增BPlusTree项目(248 mutants, 85%) + Pattern 15-19"
     ]
   },
 
@@ -146,14 +148,14 @@
   },
 
   "project_statistics": {
-    "_note": "Canonical project data. Summary of all 22 projects analyzed for this skill.",
+    "_note": "Canonical project data. Summary of all 24 projects analyzed for this skill.",
     "summary": {
-      "total_projects": 23,
-      "total_mutants": 7186,
-      "killed_mutants": 5691,
-      "survived_mutants": 1495,
-      "equivalent_mutants": 430,
-      "average_coverage_algorithmic": "87.3%",
+      "total_projects": 25,
+      "total_mutants": 10113,
+      "killed_mutants": 7688,
+      "survived_mutants": 2425,
+      "equivalent_mutants": 498,
+      "average_coverage_algorithmic": "86.5%",
       "average_coverage_gui": "25-60%",
       "wrapper_project_coverage_ceiling": "65-75%"
     },
@@ -180,7 +182,9 @@
       {"name": "FastJson",                  "mutants": 551,  "coverage": "68%",   "type": "wrapper",        "equivalent": 95,  "lines_covered": "866/966", "notes": "Alibaba fastjson 1.2.70包装器 - VOID_METHOD_CALL在库内部对象上等价 + 包装器项目覆盖率天花板~68%", "key_patterns": ["WRAPPER_VOID_EQUIVALENCE", "ASSERT_SAME_FOR_INSTANCEOF", "ORDERED_MAP_INSERTION_ORDER"]},
       {"name": "Anagram",                   "mutants": 96,   "coverage": "80%",   "type": "algorithmic",    "equivalent": 19, "lines_covered": "186/193", "notes": "字符串变位词求解器(Helper/Dictionary/Anagram 3类) - 单文件聚合80测试；递归算法中优化守卫等价(5处REMOVE_CONDITIONALS)+null≈emptySet等价(2处EMPTY_RETURNS)+防御性null检查等价(3处)+for循环边界守卫等价(2处)+死代码usage()(4处NO_COVERAGE)", "key_patterns": ["DOMINATED_CONDITION", "WRAPPER_VOID_EQUIVALENCE", "DEFENSIVE_REDUNDANCY"]},
       {"name": "Hotel",                     "mutants": 262,  "coverage": "94%",   "type": "algorithmic",    "equivalent": 14, "lines_covered": "386/390", "notes": "酒店管理系统(13业务类,状态机+排序+价格计算) - 单文件聚合~228测试；8类100%+7算子100%含MATH(100%)；发现setPrice()去耦构造器关联MATH的击杀技术；P1支配条件(contains(\"00\")支配≤100 + 外循环被内循环支配)、P16复合死码(字符范围OR)、P20 VOID等价(setItems冗余+println空行) 全部验证；14个确定性等价变异体", "key_patterns": ["DOMINATED_CONDITION", "COMPOUND_DEAD_CODE", "WRAPPER_VOID_EQUIVALENCE", "SELF_CONSISTENT_METHOD"]},
-      {"name": "Brainfuck",                 "mutants": 145,  "coverage": "98%",   "type": "algorithmic",    "equivalent": 25, "lines_covered": "210/215", "notes": "Brainfuck/Ook!/TrollScript解释器(3业务类继承链) - 单文件聚合110测试；BrainfuckEngine(0幸存)100%干净；initate()重置data/dataPointer/charPointer模式触发大量P5等价(8 MATH)+P10 substring边界对称(4 BOUNDARY)+P6自修正括号匹配(13 REMOVE_CONDITIONALS)；25个幸存全部等价验证", "key_patterns": ["DEAD_STORE_INITATE", "TERNARY_SYMMETRY", "DEFENSIVE_REDUNDANCY", "COMPOUND_DEAD_CODE"]}
+      {"name": "Brainfuck",                 "mutants": 145,  "coverage": "98%",   "type": "algorithmic",    "equivalent": 25, "lines_covered": "210/215", "notes": "Brainfuck/Ook!/TrollScript解释器(3业务类继承链) - 单文件聚合110测试", "key_patterns": ["DEAD_STORE_INITATE", "TERNARY_SYMMETRY", "DEFENSIVE_REDUNDANCY", "COMPOUND_DEAD_CODE"]},
+      {"name": "OASYS",                     "mutants": 1012, "coverage": "93%",   "type": "algorithmic",    "equivalent": 30, "lines_covered": "1319/1414", "notes": "企业OA系统(19业务类,含考勤/费用/权限/工作流/休假5个子系统) - 单文件聚合~500测试@Nested模式；561 killed (55% mutation)；方法/类覆盖100%；P21等级乘数开关缺口+P22 Record紧凑构造器NPE；JaCoCo+PIT双分析实现80%分支+95%行覆盖", "key_patterns": ["GRADE_MULTIPLIER_SWITCH_GAP", "RECORD_CONSTRUCTOR_METHOD_NPE", "SINGLE_FILE_NESTED_AGGREGATION", "JACOCO_PIT_DUAL_ANALYSIS"]},
+      {"name": "Online-Edu",                "mutants": 1388, "coverage": "85%",   "type": "algorithmic",    "equivalent": 30, "lines_covered": "1251/1741", "mutation_coverage": "43%", "notes": "Spring Boot 3.5在线教育平台(9业务类:考试评分/学习进度/报名资格/退款策略/高级定价/排课调度+价格策略/课程管理/目录服务) - 单文件聚合~5400行450+测试@Nested模式；PIT 4%→34%→43% (591/1388)；JaCoCo 9%→72%→85%行/73%分支/96%方法；小型类(record/adapter/web/config/common)全部100%；发现包级私有Spring @Bean反射覆盖+验证主导死分支(P1: maxPoints≤0被前置验证屏蔽)+Record紧凑构造器List.copyOf拒null", "key_patterns": ["SINGLE_FILE_NESTED_AGGREGATION", "JACOCO_PIT_DUAL_ANALYSIS", "DOMINATED_CONDITION", "SPRING_SERVICE_CLOCK_DI"]}
     ]
   }
 }

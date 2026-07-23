@@ -7,7 +7,7 @@ description: Use when analyzing PIT mutation testing reports with survived mutan
 
 ## Overview
 
-Systematic approach to analyze and kill survived PIT mutation testing mutants. Based on analysis of 23 Java projects, 7,568+ mutants, 87.7% average coverage on algorithmic/framework code. Covers 20 survival patterns, 11 mutation operators, 23 test patterns, and 9 Iron Rules.
+Systematic approach to analyze and kill survived PIT mutation testing mutants. Based on analysis of 25 Java projects, 10,113+ mutants, 86.5% average coverage on algorithmic/framework code. Covers 22 survival patterns, 11 mutation operators, 25 test patterns, and 9 Iron Rules.
 
 **Core principle:** Match survived mutants to known survival patterns, apply corresponding killing strategy. **Compilation verification is mandatory before any PIT run.**
 
@@ -117,6 +117,8 @@ Systematic approach to analyze and kill survived PIT mutation testing mutants. B
 | P18: Self-Consistent Method | MATH in method called by read+write paths | Killable — reflection-based internal state inspection | [survival-patterns.md](references/survival-patterns.md) |
 | P19: Probabilistic Constructor | MATH on `Math.random()*N` survives | Killable — loop-scan 50 instances, assert param≠0 | [survival-patterns.md](references/survival-patterns.md) |
 | P20: Wrapper VOID Equiv. | VOID on library internals (parser.close, etc.) | Equivalent — local variables discarded after return | [survival-patterns.md](references/survival-patterns.md) |
+| P21: Grade Multiplier Gap | Switch-enum middle values (SENIOR/MANAGER) survive | Killable — add one test per uncovered enum value | [survival-patterns.md](references/survival-patterns.md) |
+| P22: Record Ctor NPE | Record compact constructor calls method accessing unassigned fields | Equivalent (SOURCE_BUG) — fields null until ctor completes | [survival-patterns.md](references/survival-patterns.md) |
 
 ---
 
@@ -495,9 +497,9 @@ Identify what's NEW: new pattern? new project? correction to existing pattern? n
 | Working on B+Tree, binary tree, or recursive data structure | [bplustree-testing.md](references/bplustree-testing.md) | t-value selection, assertion escalation ladder, incremental building |
 | Working on AWT/Swing/GUI class | [awt-gui-testing.md](references/awt-gui-testing.md) | Headless compatibility, Graphics mock chaining, GUI subclass pattern |
 | Want to sanity-check your tests | [common-mistakes.md](references/common-mistakes.md) | 40+ common mistakes + 30+ red flags checklist |
-| Need to interpret PIT report metrics | [pit-metrics.md](references/pit-metrics.md) | Coverage statistics, diagnostic matrix, 22-project comparison table |
-| Want to learn from similar past projects | [project-case-studies.md](references/project-case-studies.md) | 22 project deep-dives: strategies, equivalent mutants, lessons |
-| Need canonical operator/pattern/project data | [project-data.json](./project-data.json) | Structured JSON: 16 operators, 20 patterns, 22 projects |
+| Need to interpret PIT report metrics | [pit-metrics.md](references/pit-metrics.md) | Coverage statistics, diagnostic matrix, 24-project comparison table |
+| Want to learn from similar past projects | [project-case-studies.md](references/project-case-studies.md) | 24 project deep-dives: strategies, equivalent mutants, lessons |
+| Need canonical operator/pattern/project data | [project-data.json](./project-data.json) | Structured JSON: 16 operators, 22 patterns, 24 projects |
 
 ### Typical Read Sequence During a PIT Session
 

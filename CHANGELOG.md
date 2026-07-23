@@ -7,6 +7,31 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [v2.6.0] - 2026-07-23
+
+### Added
+- **OASYS 企业OA系统项目** (1012 mutants, 55% killed, 93% line, 19类) — 大型企业应用含考勤/费用/权限/工作流/休假5个子系统
+- **P21 Grade Multiplier Switch Gap** — switch-enum中间值(SENIOR/MANAGER)未覆盖导致REMOVE_CONDITIONALS存活
+- **P22 Record Compact Constructor NPE** — Java Record紧凑构造器中调用实例方法访问未赋值字段导致NPE
+- **TP24 Single-File @Nested Aggregation** — 使用@Nested类在单文件中聚合500+测试
+- **TP25 JaCoCo + PIT Dual Analysis** — 互补使用JaCoCo(行/分支/方法)和PIT(变异)的双覆盖分析策略
+
+### Changed
+- 项目总数: 23→24, 变异体总数: 7,713→8,725
+- SKILL.md Quick Reference: 20→22 存活模式, 23→25 测试模式
+- common-mistakes.md: 新增6条(含Maven source level/Record NPE/工厂参数过多)
+- survival-patterns.md: 新增P21+P22
+- test-patterns-catalog.md: 新增TP24+TP25
+- project-data.json: 版本 v2.5.4→v2.6.0, 新增OASYS项目条目
+
+### Verified
+- 方法覆盖100% (164/164), 类覆盖100% (60/60)
+- JaCoCo分支覆盖80% (329/1674 missed), 行覆盖95%
+- PIT变异覆盖55% (561/1012 killed)
+- 单文件聚合策略在大项目中可行(5500+行, 500+测试)
+
+---
+
 ## [v2.5.4] - 2026-06-11
 
 ### Added

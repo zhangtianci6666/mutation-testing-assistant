@@ -245,3 +245,27 @@ private int[] createHashes(int data, int hashes) {
 **How to identify:** Look for projects importing a large third-party library and wrapping its API. If library objects are not stored in any field and not returned, the void calls are equivalent.
 **Impact on coverage ceiling:** Wrapper projects have an inherent ceiling of ~65-75%. ~20-25% of mutations are VOID on library internals (equivalent).
 **Action:** Document as equivalent. Recognize wrapper projects early to set realistic expectations.
+
+---
+
+### P21: Grade Multiplier Switch Gap
+
+**Symptom:** REMOVE_CONDITIONALS_EQUAL_ELSE or switch-branch mutations in grade-multiplier or tier-resolution switches survive because not all enum values are tested.
+
+**Root Cause:** Switches over enums with 6+ values (e.g., `EmployeeGrade`: INTERN/STAFF/SENIOR/MANAGER/DIRECTOR/EXECUTIVE) generate 2-3 mutants per uncovered case. The middle values (SENIOR=3, MANAGER=4) are often skipped.
+
+**How to identify:** Look for `switch (grade)` or `switch (category)` with >5 cases. If coverage shows 2 of 6 branches missed, the two middle enum values are untested.
+
+**Action:** Add one test per uncovered enum value. Each test should assert the SPECIFIC output for that grade (e.g., `assertEquals(new BigDecimal("240.00"), cap)` for SENIOR * MEAL=80).
+
+---
+
+### P22: Record Compact Constructor Method Call NPE
+
+**Symptom:** `NullPointerException` in Record compact constructor when calling an instance method that accesses record fields. The PIT/compiler error shows `Cannot invoke "..." because "this.end" is null`.
+
+**Root Cause:** Java Records assign fields AFTER the compact constructor runs. Instance methods like `crossesMidnight()` that access `this.end` will NPE because fields are still null. This is a source code bug (Iron Rule 8: don't fix).
+
+**How to identify:** Record with validation calling instance method in compact constructor, and the method references `this.<field>`.
+
+**Action:** Skip tests that require constructing the Record through the invalid path. Document as equivalent (SOURCE_BUG). The unkillable branch is a constructor validation path that can never be reached without crashing.

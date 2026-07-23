@@ -56,7 +56,7 @@ PIT reports three metrics per class/package:
 | WeightBalancedTree2023 | 191 | 59% | 深度遍历验证 |
 | P_Queue | 1,032 | 33% | GUI/Animation 等价变异识别 + Counting Subclass |
 
-**算法/框架类平均值:** 6,681 mutants, 87.3% coverage (22 projects)
+**算法/框架类平均值:** 8,297 mutants, 87.3% coverage (24 projects)
 **框架适配器项目覆盖率天花板:** ~88% — 受 MethodHandles API 类型匹配屏障限制
 **包装器/库封装项目覆盖率天花板:** 65-75% — 受 Wrapper VOID Equivalence 等价变异限制
 **GUI/Animation 类实际可测上限:** 25-60% per class — 受 Animation State Restoration 等价变异限制
