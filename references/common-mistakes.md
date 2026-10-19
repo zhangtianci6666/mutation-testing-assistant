@@ -97,3 +97,13 @@
 - **Using `BigDecimal.ZERO` with `assertEquals(expected, actual)` without matching scale** | **`BigDecimal.ZERO` has scale 1; `money()` returns scale 2. `assertEquals(BigDecimal.ZERO, result.fee())` fails because `0 != 0.00`. Use `assertEquals(new BigDecimal("0.00"), result.fee())` or `assertTrue(result.fee().compareTo(BigDecimal.ZERO) == 0)`**
 - **Setting `List.of((SomeType) null)` to test null element validation** | **`List.copyOf()` used in record compact constructors rejects null elements. The NPE occurs in the record constructor, not in the validation method. Use `new ArrayList<>()` + `add(null)` if you need a null-containing list, but be aware record constructors will still reject it**
 - **Forgetting `mvn clean` after major test file edits** | **Maven's incremental compiler may not detect changes in large files after repeated edits. If `mvn test-compile` says "Nothing to compile" but you edited the file, run `mvn clean test-compile`**
+- **只断言异常类型、不断言异常消息（源码有统一异常出口）** | **`if (s==null||s.isEmpty()) throw DomainException("id string invalid")` 外层 `catch(NumberFormatException)` 也抛 DomainException。`if(false)` 变异体让 null 流入 parse → NFE → 被包成同一个消息以外的 DomainException，`assertThrows(DomainException.class)` 仍通过。必须断言 `getMessage()`（见 test-patterns-catalog Pattern 27）**
+- **用“id > 0 / 唯一”验证位混合型 ID 生成器** | **`(millis << 20) ^ counter` 把 `<<` 改成 `>>` 后仍然正整数、仍然唯一。需要反射读计数器 + `before==after` 毫秒窗口反算期望值（Pattern 26）**
+- **对 PRNG 只断言 `[0,1)` 范围或“两次调用不同”** | **`seed ^= seed << 13` 的移位方向变异后取值仍落在 `[0,1)`。必须用固定种子的黄金序列逐值精确比较（delta 0.0），黄金值以 JVM 实际输出为准**
+- **假设“依赖链会累加”来断言 longestPath / 关键路径** | **先确认拓扑序方向。若实现是“依赖者先出队”（indeg 统计的是依赖者数量），则 `dp.getOrDefault(dep,0)` 恒为 0，最长路径退化为“单任务最大工期”。按真实语义断言，否则测试本身就是错的**
+- **假设 `isAvailable(start,end)` 能识别“更早开始但重叠”的区间** | **只做 `floorEntry(start)` 检查的实现，起点早于已有预约时 floor 为 null 直接返回 true。写测试前先读算法，别按直觉断言语义**
+- **假设构造器参数未被钳制就写精确值断言** | **`new Risk(name,cat,1.0,5.0)` 的 impact 会被 clamp 到 1.0，导致后续 mean/worst 断言全部偏大。写断言前先核对构造器的 clamp 范围**
+- **看到 `if (x < L) x = L;` 就直接判等价** | **P23 只对"边界值赋回自身且无越界入口"成立。实测 30 个存活里 6 个（20%）可杀：±0.0 符号位、隐藏状态越界、容器身份。判等价前必须走 survival-patterns.md P23 的判定流程**
+- **用 `assertEquals(a, b, delta)` 或 `==` 去比较 ±0.0** | **两者都把 `-0.0` 与 `+0.0` 视为相等，看漏了 `x < 0` 与 `x <= 0` 在 `-0.0` 处的分歧。必须用 `Double.doubleToRawLongBits`**
+- **只按构造器保证的"合法区间"设计输入** | **`new Researcher("big", 100)` 能构造出 capacity=100（超过 40 上限），此时 `releaseHours(0)` 的提前返回才是可观测的（100 vs 40）。写测试前先看构造器是否校验上限**
+- **把 EMPTY_RETURNS 一律判等价** | **空分支里 `return res`（刚 new 的 ArrayList）换成 `Collections.emptyList()` 后内容相同，但可变性/实例身份不同，对返回值 `add()` 即可击杀；判定前先看该集合是否被 new 出来**

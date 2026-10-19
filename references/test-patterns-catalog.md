@@ -444,3 +444,118 @@ class MutationTest {
 3. 最后用 PIT 杀死剩余变异体
 4. `mvn test` 后 JaCoCo 报告在 `target/site/jacoco/index.html`
 
+
+---
+
+### Pattern 26: 黄金序列 + 位布局反射（PRNG / ID 生成器）
+
+**适用场景:** xorshift / LCG 伪随机、`System.nanoTime() ^ (millis << k)` 这类混合位运算的 ID 生成器。`MATH`（移位方向、加减乘除）变异体在“取值范围合法”“唯一性”这类弱断言下全部存活。
+
+**失效的弱断言:** `assertTrue(v >= 0 && v < 1)`、`assertTrue(id > 0)`、`ids.add(id)` —— 移位方向反了仍然满足。
+
+**两级杀法:**
+
+1. **黄金序列**（PRNG）：固定种子必然产生确定序列，用真实实现的输出作为黄金值，逐位精确比较（delta = 0.0）。
+```java
+RiskAnalyzer a = new RiskAnalyzer();          // seed = 2463534242
+assertEquals(0.9372512804277798, a.rnd(), 0.0);
+assertEquals(0.5291417429544768, a.rnd(), 0.0);
+```
+   一处黄金值同时杀死 `<<`→`>>`、`>>>`→`<<` 等所有移位变异体。
+
+2. **位布局反射**（ID 生成器）：读私有计数器字段，再在“毫秒不变”的窗口内反算期望值。
+```java
+Field f = IdGenerator.class.getDeclaredField("COUNTER");
+f.setAccessible(true);
+AtomicLong counter = (AtomicLong) f.get(null);
+for (int i = 0; i < 20; i++) {
+    long before = System.currentTimeMillis();
+    long id = IdGenerator.nextId();
+    long after = System.currentTimeMillis();
+    if (before == after) {                    // 毫秒稳定才断言，避免抖动
+        assertEquals((before << 20) ^ counter.get(), id);
+        break;
+    }
+}
+```
+
+**关键规则:**
+1. 黄金值必须由**真实实现**产出（跑一次打印），不要手推；Python 复现的浮点末位可能差 1 ULP（`0.012847983763020765` vs `0.01284798376302076`），以 JVM 输出为准。
+2. 时间相关表达式必须用 `before == after` 的稳定窗口保护，否则是偶发失败的测试。
+3. 若某位分支（如 `if (id < 0) id = -id;`）在数学上永不可达（两个操作数第 63 位恒为 0），该分支的所有变异体等价，不要试图构造。
+
+---
+
+### Pattern 27: 异常消息区分（捕获兜底掩盖变异）
+
+**适用场景:** 入参校验 `if (s == null || s.isEmpty()) throw new DomainException("id string invalid");` 外面套了 `catch (NumberFormatException e) { throw new DomainException("id parse failed", e); }`。
+
+**症状:** `REMOVE_CONDITIONALS` 把整条 `if` 变成 `if (false)`，`null` 继续流入 `Long.parseUnsignedLong(null)` → `NumberFormatException` → 被 catch 包成**同一个** `DomainException`。`assertThrows(DomainException.class, ...)` 依然通过，变异体存活。
+
+**杀法:** 断言异常消息，而不是只断言异常类型。
+```java
+DomainException nullEx = assertThrows(DomainException.class, () -> IdGenerator.fromString(null));
+assertEquals("id string invalid", nullEx.getMessage());   // 变异体抛出 "id parse failed"
+DomainException zeroEx = assertThrows(DomainException.class, () -> IdGenerator.fromString("0"));
+assertEquals("id zero invalid", zeroEx.getMessage());
+```
+
+**关键规则:**
+1. 只要源码存在“统一异常出口”（catch 后重新包装、统一 `IllegalArgumentException` 工厂），异常**类型**就不再具备区分力，必须升级到消息/`getCause()`。
+2. 反过来，先确认哪条路径抛哪个消息，再写断言；断言错消息会误判。
+
+---
+
+### Pattern 28: 边界等价体的三类逃生口（±0.0 / 隐藏状态 / 容器身份）
+
+**适用场景:** 面对 `CONDITIONALS_BOUNDARY` 存活体，准备写“等价”之前。实测经验：30 个存活里 6 个（20%）是能杀的，判错的代价是永久损失分数。
+
+**逃生口① ±0.0 符号位**
+
+`assertEquals(double, double, delta)` 与 `==` 都把 `-0.0` 和 `+0.0` 视为相等，所以常规断言看不见差异；但 `Double.doubleToRawLongBits` 可以。
+
+```java
+@Test
+public void budgetItemKeepsNegativeZeroCost() {
+    Budget.Item item = new Budget.Item("zero", -0.0, -0.0, "c");
+    // -0.0 不满足 cost < 0，钳制不应改写符号位
+    assertEquals(Double.doubleToRawLongBits(-0.0), Double.doubleToRawLongBits(item.getCost()));
+    assertEquals(Double.doubleToRawLongBits(-0.0), Double.doubleToRawLongBits(item.getValue()));
+}
+```
+一处断言可同时击杀同一表达式里的多个边界变异体（本例 L14 与 L15）。
+
+**逃生口② 隐藏状态破坏不变量**
+
+守卫后面还有第二个归一动作时，去找**能让不变量本来就已越界**的入口。典型是构造器不做上限校验、而方法里又做上限归一。
+
+```java
+@Test
+public void researcherReleaseNonPositiveDoesNotNormaliseOversizedCapacity() {
+    Researcher r = new Researcher("big", 100);   // 构造器允许 100，超过 40 上限
+    assertEquals(100, r.getCapacity());
+    r.releaseHours(0);                            // 非正数必须直接返回
+    assertEquals(100, r.getCapacity());           // 变异体会 +=0 后被归一成 40
+}
+```
+
+**逃生口③ 容器可变性 / 实例身份（EMPTY_RETURNS 专用）**
+
+`return res;`（刚 new 的空集合）被换成 `Collections.emptyList()` 时，内容永远相同，但**可变性和实例身份**不同。
+
+```java
+@Test
+public void matchingEmptyResultIsWritableList() {
+    List<MatchingEngine.Assignment> empty = engine.match(null, new ArrayList<>());
+    assertTrue(empty.isEmpty());
+    empty.add(new MatchingEngine.Assignment(new Task("t", 1, Medium), null, 0.0));
+    assertEquals(1, empty.size());   // 变异体抛 UnsupportedOperationException
+}
+```
+
+**关键规则:**
+1. 判等价前**先跑判定流程**，不要凭“数值相等”下结论。
+2. 逃生口①只对 `double/float` 且有 `< 0` / `<= 0` 的条件成立；整数域（`long`/`int`）没有负零，`id == 0` 处 `-0 == 0` 是真等价。
+3. 逃生口②要找“**写入该字段的所有入口**”，grep 字段名，确认有没有绕过归一化的一条。
+4. 逃生口③会断言返回容器的可变性——属于实现细节，需在注释里说明动机；若团队禁止此类断言，则如实记录为等价。
+5. 这三类都不成立时，等价证明写成三句话：“边界值映射到自身 + 无越界入口 + 结果不进入对符号零敏感的算术”。

@@ -269,3 +269,66 @@ private int[] createHashes(int data, int hashes) {
 **How to identify:** Record with validation calling instance method in compact constructor, and the method references `this.<field>`.
 
 **Action:** Skip tests that require constructing the Record through the invalid path. Document as equivalent (SOURCE_BUG). The unkillable branch is a constructor validation path that can never be reached without crashing.
+
+---
+
+### P23: Fixed-Point Clamp Boundary (钳制边界自映射) 🟰 / ⚔️
+
+**Symptom:** `CONDITIONALS_BOUNDARY` survives on every guard that looks like a clamp: `if (v < 0) v = 0;`, `if (v > 1) v = 1;`, `if (hours <= 0) return;`, `if (capacity > 40) capacity = 40;`, `cost < 0 ? 0 : cost`.
+
+**Root Cause:** The mutation changes `<` to `<=` (or `>` to `>=`). At the only input where the two differ — the exact boundary value — the assignment writes **the same value the value already has**. `v = 0` when `v == 0` is a no-op.
+
+**How to identify:** Guard's body assigns the literal used on the right-hand side of the comparison (`if (x < L) x = L;`).
+
+**Counter-case (obviously killable):** Guard body assigns a *different* value than the boundary (`if (x < L) x = L - 1;`).
+
+---
+
+#### ⚠️ 先试三类逃生口，再判等价（2026-10-19 复检修正）
+
+早期版本把 P23 一律判为等价，**这是错的**。本项目 30 个存活体里有 6 个（20%）通过下面三类逃生口被成功击杀。判等价前必须逐条排除：
+
+| # | 逃生口 | 判据 | 击杀手段 |
+|---|--------|------|----------|
+| ① | **±0.0 符号位** | 条件是 `x < 0` 还是 `x <= 0`，在 `x = -0.0` 时结论相反：`-0.0 < 0` 为 false（保留 -0.0），`-0.0 <= 0` 为 true（改写 +0.0） | `assertEquals(Double.doubleToRawLongBits(-0.0), Double.doubleToRawLongBits(actual))`，`assertEquals(a,b,delta)` 与 `==` **都区分不了** |
+| ② | **隐藏状态破坏不变量** | 守卫之后的代码还有第二个归一动作（如 `if (capacity > 40) capacity = 40`）。查询构造器/其他入口能否让不变量**本来就已越界** | `new Researcher("big", 100)` 使 capacity=100（超过 40 上限），再 `releaseHours(0)`：原实现提前 return 保持 100，变异体执行 `capacity += 0` 后被归一成 40 |
+| ③ | **后续算术吸收** | 钳制结果是否进入 `a*x + b` 这类无符号零敏感、无精度损失的运算 | 若被吸收 → 真等价：`updateRating(-0.0)` 后 `rating*0.7 + (-0.0*0.3)` 实测位模式为 `0x0`，与钳成 `+0.0` 完全一致 |
+
+**逃生口②的通用查法:** 读所有写入该字段的位置（构造器、setter、各种 `release/add`），看是否存在**绕过上限归一**的入口。存在 → 该边界变异体 100% 可杀。
+
+**判定流程:**
+```
+if (边界值 == 赋值字面量) {
+    if (字段是 double/float && 条件是 < 0 / <= 0)   -> 试 ① -0.0
+    if (后续有第二个归一动作 && 存在越界入口)        -> 试 ② 隐藏状态
+    if (结果进入算术表达式)                         -> 试 ③ 并核对位模式
+    以上都不成立                                    -> 真等价，按 Iron Rule 9 记录
+}
+```
+
+**Action:** 不要看到钳制就判等价。先花两分钟走一遍判定流程；三类逃生口都不成立时，再用“边界值映射到自身 + 无越界入口 + 结果不进入算术”三句话写出证明。同一条 `if` 上的 `REMOVE_CONDITIONALS` / `NEGATE` 通常也是可杀的，优先级更高。
+
+---
+
+### P24: Floor-Masked Lower Clamp (下限钳制被地板值掩盖) 🟰
+
+**Symptom:** `REMOVE_CONDITIONALS_ORDER_ELSE` on `if (r < 0) r = 0;` survives even with a test that sets a negative ratio.
+
+**Root Cause:** The clamped variable feeds a later `if (r < MIN) r = MIN;` floor. Any negative value is ≤ MIN, so it gets lifted to the same MIN as the clamped-to-zero path. The two paths converge before any getter can observe them.
+
+```java
+public double requiredReserve() {
+    double r = totalCost() * reserveRatio;      // ratio may be negative
+    if (r < 1000) r = 1000;                     // floor swallows every negative
+    return r;
+}
+public void setReserveRatio(double r) {
+    if (r < 0) r = 0;                           // removing this is unobservable
+    if (r > 0.5) r = 0.5;
+    this.reserveRatio = r;
+}
+```
+
+**How to identify:** Two-stage computation where the *only* consumer applies `max()`/floor/threshold to the intermediate value, and no getter exposes the raw field. Trace the value to its single consumer before writing tests.
+
+**Action:** Document as equivalent with the convergence proof (both paths → MIN). Kill the *upper* clamp instead (`r > 0.5`), which is observable whenever the input exceeds the cap and the floor is below `cap * base`.

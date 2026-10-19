@@ -7,7 +7,7 @@ description: Use when analyzing PIT mutation testing reports with survived mutan
 
 ## Overview
 
-Systematic approach to analyze and kill survived PIT mutation testing mutants. Based on analysis of 25 Java projects, 10,113+ mutants, 86.5% average coverage on algorithmic/framework code. Covers 22 survival patterns, 11 mutation operators, 25 test patterns, and 9 Iron Rules.
+Systematic approach to analyze and kill survived PIT mutation testing mutants. Based on analysis of 26 Java projects, 10,418+ mutants, 86.5% average coverage on algorithmic/framework code. Covers 24 survival patterns, 11 mutation operators, 28 test patterns, and 9 Iron Rules.
 
 **Core principle:** Match survived mutants to known survival patterns, apply corresponding killing strategy. **Compilation verification is mandatory before any PIT run.**
 
@@ -62,7 +62,7 @@ Systematic approach to analyze and kill survived PIT mutation testing mutants. B
 │   8. If ALL survivors are proven equivalent (with WHY per survivor):      │
 │      → Output Iron Rule 9 table → announce NEXT class → GOTO step 2      │
 │   9. CRITICAL: "I think it's equivalent" ≠ PROVEN equivalent             │
-│      You must MATCH to a known pattern (P1-P20) OR provide logical       │
+│      You must MATCH to a known pattern (P1-P24) OR provide logical       │
 │      proof with code evidence. "Probably" is NOT a valid reason.          │
 │                                                                          │
 │   ────────────────────────────────────────────────────────────────────   │
@@ -93,7 +93,7 @@ Systematic approach to analyze and kill survived PIT mutation testing mutants. B
 
 ---
 
-## Quick Reference: Survival Patterns (20 patterns)
+## Quick Reference: Survival Patterns (24 patterns)
 
 | Pattern | Symptom | Action | Read |
 |---------|---------|--------|------|
@@ -119,6 +119,8 @@ Systematic approach to analyze and kill survived PIT mutation testing mutants. B
 | P20: Wrapper VOID Equiv. | VOID on library internals (parser.close, etc.) | Equivalent — local variables discarded after return | [survival-patterns.md](references/survival-patterns.md) |
 | P21: Grade Multiplier Gap | Switch-enum middle values (SENIOR/MANAGER) survive | Killable — add one test per uncovered enum value | [survival-patterns.md](references/survival-patterns.md) |
 | P22: Record Ctor NPE | Record compact constructor calls method accessing unassigned fields | Equivalent (SOURCE_BUG) — fields null until ctor completes | [survival-patterns.md](references/survival-patterns.md) |
+| P23: Fixed-Point Clamp | `if (x < L) x = L;` 的边界变异(`<`→`<=`)存活 | ⚔️ **先试 3 类逃生口**(±0.0 符号位 / 隐藏状态越界 / 容器身份)，全不成立才判等价 — 实测 20% 可杀 | [survival-patterns.md](references/survival-patterns.md) |
+| P24: Floor-Masked Lower Clamp | 下限钳制被后续 `if (r < MIN) r = MIN` 掩盖 | Equivalent — 被钳负值最终都被抬到同一 MIN | [survival-patterns.md](references/survival-patterns.md) |
 
 ---
 
@@ -187,7 +189,7 @@ Attack classes in ascending complexity order:
 
 **Iron Rule 8: Zero Source Modification.** Only create/modify test code. NEVER touch `src/main/java`, `pom.xml`, or build config.
 
-**Iron Rule 9: Equivalent Mutant Accountability — Mandatory WHY Per Survivor.** When a class cannot reach 100% kill rate after exhausting ALL killing techniques, produce a precise assessment for EVERY surviving mutant. Each entry MUST include: (1) specific code line and snippet, (2) logical proof of WHY it cannot be killed, (3) which pattern it matches (P1-P20), and (4) what techniques were tried and failed. "Probably equivalent" or "seems equivalent" is FORBIDDEN — only "proven equivalent" with evidence.
+**Iron Rule 9: Equivalent Mutant Accountability — Mandatory WHY Per Survivor.** When a class cannot reach 100% kill rate after exhausting ALL killing techniques, produce a precise assessment for EVERY surviving mutant. Each entry MUST include: (1) specific code line and snippet, (2) logical proof of WHY it cannot be killed, (3) which pattern it matches (P1-P24), and (4) what techniques were tried and failed. "Probably equivalent" or "seems equivalent" is FORBIDDEN — only "proven equivalent" with evidence.
 ```
 ┌──────────────────────────────────────────────────────────────────────┐
 │ Equivalent Mutant Report: {ClassName}                                 │
@@ -232,7 +234,7 @@ Attack classes in ascending complexity order:
 WHILE (class has SURVIVED mutants that are NOT documented as equivalent with WHY):
     FOR EACH survivor:
         1. Read the source line where the mutation occurred
-        2. Identify WHY it's surviving (match to P1-P20 patterns)
+        2. Identify WHY it's surviving (match to P1-P24 patterns)
         3. If killable: pick the right killing technique → write test
         4. If possibly equivalent: exhaust ALL techniques before declaring
     write MORE tests → mvn test-compile (ZERO errors) → mvn pitest → read report
@@ -261,8 +263,9 @@ WHILE (class has SURVIVED mutants that are NOT documented as equivalent with WHY
 **Analysis phase (after each PIT run):**
 0. **MANDATORY — List EVERY survivor with WHY it survived:** For EACH survived mutant, state: operator, line number, and your hypothesis for WHY it survived. If you can't hypothesize why, you haven't read the source code carefully enough. Read the source line BEFORE writing any test.
 1. **Identify survived mutants** for CURRENT CLASS ONLY; distinguish SURVIVED from TIMED_OUT (TIMED_OUT = killed, P13 in [survival-patterns.md](references/survival-patterns.md))
-2. **Match to Survival Pattern** — see Quick Reference table above; for full details read [survival-patterns.md](references/survival-patterns.md). Every survivor MUST be matched: either to a known pattern (P1-P20) or identified as a new killable case.
+2. **Match to Survival Pattern** — see Quick Reference table above; for full details read [survival-patterns.md](references/survival-patterns.md). Every survivor MUST be matched: either to a known pattern (P1-P24) or identified as a new killable case.
 3. **Quick-kill: ArrayList capacity** — MATH on `new ArrayList<>(expr)` → P15 in [survival-patterns.md](references/survival-patterns.md), equivalent — explain WHY: "capacity is perf hint, same behavior regardless"
+3b. **钳制边界先试逃生口** — 遇到 P23（`if (x < L) x = L`）不要直接判等价：先试 ±0.0 符号位（`doubleToRawLongBits`）、隐藏状态越界（构造器/其他入口能否让不变量已越界）、容器身份；见 test-patterns-catalog Pattern 28。
 4. **Quick-kill: Probabilistic** — MATH on `Math.random()*N` → P19 in [survival-patterns.md](references/survival-patterns.md), loop-scan with reflection
 5. **Check Self-Consistent** — private method MATH, read+write callers? → P18 in [survival-patterns.md](references/survival-patterns.md); need [test-patterns-catalog.md](references/test-patterns-catalog.md) Pattern 14
 6. **Check Compound Dead Code** — sub-conditions of `&&` survive? → P16 in [survival-patterns.md](references/survival-patterns.md), cross-method analysis — explain WHY: "earlier condition guarantees later conditions are never reached"
@@ -309,7 +312,7 @@ WHILE (class has SURVIVED mutants that are NOT documented as equivalent with WHY
 │    ☐ Constructor argument field assertion (Pattern 17)                 │
 │                                                                        │
 │  ☐ Survivors NOT killable after exhausting ALL above?                  │
-│    → MUST match each to a specific pattern (P1-P20) WITH proof         │
+│    → MUST match each to a specific pattern (P1-P24) WITH proof         │
 │    → MUST output Iron Rule 9 table with WHY for every survivor         │
 │    → MUST explain: what was tried, why it failed, why it's proven eq. │
 │    → Only THEN can you ✅ ADVANCE with documented equivalents           │
@@ -424,7 +427,7 @@ Identify what's NEW: new pattern? new project? correction to existing pattern? n
 │     - Project comparison table up to date? → ADD new project row         │
 │                                                                          │
 │  ☐ SKILL.md:                                                             │
-│     - Quick Reference table: all 20 patterns still correct? → FIX any    │
+│     - Quick Reference table: all 24 patterns still correct? → FIX any    │
 │     - Overview line: counts (projects, mutants, coverage) accurate?     │
 │     - Launch Sequence: 5 rules still complete? → ADD if new rule needed │
 │     - Iron Rules: any need refinement based on project experience?       │
@@ -491,7 +494,7 @@ Identify what's NEW: new pattern? new project? correction to existing pattern? n
 
 | Situation | File | What's Inside |
 |-----------|------|---------------|
-| Survivor matched a pattern (P1-P20), need details | [survival-patterns.md](references/survival-patterns.md) | 20 patterns: symptom, root cause, code example, action |
+| Survivor matched a pattern (P1-P24), need details | [survival-patterns.md](references/survival-patterns.md) | 24 patterns: symptom, root cause, code example, action |
 | Need operator-specific killing code | [killing-strategies.md](references/killing-strategies.md) | 11 operators with code + quick-kill decision tree |
 | Need a specific test technique (reflection, counting subclass, etc.) | [test-patterns-catalog.md](references/test-patterns-catalog.md) | 23 reusable test patterns with code |
 | Working on B+Tree, binary tree, or recursive data structure | [bplustree-testing.md](references/bplustree-testing.md) | t-value selection, assertion escalation ladder, incremental building |
@@ -499,7 +502,7 @@ Identify what's NEW: new pattern? new project? correction to existing pattern? n
 | Want to sanity-check your tests | [common-mistakes.md](references/common-mistakes.md) | 40+ common mistakes + 30+ red flags checklist |
 | Need to interpret PIT report metrics | [pit-metrics.md](references/pit-metrics.md) | Coverage statistics, diagnostic matrix, 24-project comparison table |
 | Want to learn from similar past projects | [project-case-studies.md](references/project-case-studies.md) | 24 project deep-dives: strategies, equivalent mutants, lessons |
-| Need canonical operator/pattern/project data | [project-data.json](./project-data.json) | Structured JSON: 16 operators, 22 patterns, 24 projects |
+| Need canonical operator/pattern/project data | [project-data.json](./project-data.json) | Structured JSON: 16 operators, 24 patterns, 26 projects |
 
 ### Typical Read Sequence During a PIT Session
 

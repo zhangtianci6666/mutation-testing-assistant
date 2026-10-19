@@ -1,6 +1,6 @@
 # Mutation Testing Assistant
 
-> 基于 24 个 Java 项目、8,725 个变异体实战经验提炼的 PIT 变异测试知识库——系统化分析存活变异体、识别等价变异体、编写杀活测试。
+> 基于 26 个 Java 项目、10,418 个变异体实战经验提炼的 PIT 变异测试知识库——系统化分析存活变异体、识别等价变异体、编写杀活测试。
 
 [![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](LICENSE)
 [![Java](https://img.shields.io/badge/Java-8%2B-orange)](https://adoptium.net/)
@@ -13,8 +13,8 @@
 
 一套完整的 **PIT 变异测试实战方法论**，提炼自 24 个真实 Java 项目的变异测试经验——涵盖算法类（B+Tree、链表、加密、排序、变位词、Brainfuck解释器）、CLI 解析器、GUI/Animation、包装器/库封装、框架适配器等多种项目类型。帮助 Java 开发者：
 
-- 🎯 **快速定位**——将存活变异体匹配到 22 个已知存活模式
-- ⚡ **精准杀活**——使用 25 个测试模式 + 反射/内部状态探查等高级技巧
+- 🎯 **快速定位**——将存活变异体匹配到 24 个已知存活模式
+- ⚡ **精准杀活**——使用 28 个测试模式 + 反射/内部状态探查等高级技巧
 - 🛡️ **避免浪费**——识别 15 种真等价变异体，不投入无效测试
 - 📊 **读懂指标**——理解 Line Coverage / Mutation Coverage / Test Strength 的关系
 
@@ -22,7 +22,7 @@
 
 1. **运行 PIT** 生成变异测试报告（先于任何源码分析）
 2. **打开报告** 查看 SURVIVED 变异体列表
-3. **匹配模式** 对照 [Quick Reference](#quick-reference-survival-patterns) 22 个存活模式
+3. **匹配模式** 对照 [Quick Reference](#quick-reference-survival-patterns) 24 个存活模式
 4. **应用策略** 按对应 killing rule 编写测试
 5. **重跑 PIT** 验证杀活效果
 
@@ -143,12 +143,12 @@ SKILL.md 不包含详细内容，而是告诉模型**什么时候去读哪个文
 |-------------|-----------|
 | 变异体匹配到某个模式，需要详情 | [survival-patterns.md](references/survival-patterns.md) — 22个模式：症状、根因、代码、行动 |
 | 需要某种操作符的杀活代码 | [killing-strategies.md](references/killing-strategies.md) — 11种操作符 + 快速杀活决策树 |
-| 需要特定测试技巧（反射、计数子类等） | [test-patterns-catalog.md](references/test-patterns-catalog.md) — 25个测试模式 + 代码 |
+| 需要特定测试技巧（反射、计数子类等） | [test-patterns-catalog.md](references/test-patterns-catalog.md) — 28个测试模式 + 代码 |
 | 处理 B+Tree / 递归数据结构 | [bplustree-testing.md](references/bplustree-testing.md) — t值选择、断言升级阶梯 |
 | 处理 AWT/Swing/GUI 类 | [awt-gui-testing.md](references/awt-gui-testing.md) — Headless兼容、Graphics mock |
 | 想对测试做 sanity check | [common-mistakes.md](references/common-mistakes.md) — 46+常见错误 + 36+红旗检查 |
 | 需要解读 PIT 报告指标 | [pit-metrics.md](references/pit-metrics.md) — 覆盖率统计、诊断矩阵 |
-| 想参考类似项目经验 | [project-case-studies.md](references/project-case-studies.md) — 24个项目深度复盘 |
+| 想参考类似项目经验 | [project-case-studies.md](references/project-case-studies.md) — 26个项目深度复盘 |
 | PIT 跑完后（自动优化） | [self-optimization.md](references/self-optimization.md) — 7步Post-Mortem工作流
 
 ## 项目数据

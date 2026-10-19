@@ -2,14 +2,14 @@
   "skill_metadata": {
     "name": "Mutation Testing Assistant",
     "description": "基于25个Java项目、10113个变异体分析的PIT变异测试知识库",
-    "version": "v2.6.1",
+    "version": "v2.8.0",
     "language": "Java",
     "framework": "JUnit 5 + PIT",
-    "projects_analyzed": 25,
-    "total_mutants": 10113,
-    "killed_mutants": 7688,
-    "survived_mutants": 2425,
-    "equivalent_mutants": 498,
+    "projects_analyzed": 26,
+    "total_mutants": 10418,
+    "killed_mutants": 7969,
+    "survived_mutants": 2449,
+    "equivalent_mutants": 522,
     "average_coverage_algorithmic": "87.3%",
     "average_coverage_gui": "25-60%",
     "equivalent_mutant_rate_algorithmic": "3.0%",
@@ -29,7 +29,6 @@
       "v2.4.0: 新增BPlusTree项目(248 mutants, 85%) + Pattern 15-19"
     ]
   },
-
   "mutant_operators": {
     "_note": "Canonical list of PIT mutators covered by this skill. Descriptions are one-line Chinese summaries for quick lookup.",
     "supported": [
@@ -69,122 +68,585 @@
       "REMOVE_CONDITIONALS_EQUAL_IF": "if(cond) → if(true) (总是走 if)"
     }
   },
-
   "survival_patterns_index": {
     "_note": "Quick lookup: pattern ID → name + frequency. Full details (description, examples, solution) are in skill.md Survival Patterns section.",
     "patterns": [
-      {"id": "BOUNDARY_VALUE",           "name": "边界条件未触及",           "frequency": "高", "category": "killable"},
-      {"id": "VOID_CALL_REMOVAL",        "name": "Void方法调用移除",         "frequency": "高", "category": "killable"},
-      {"id": "UNCOLLECTED_BRANCH",       "name": "未覆盖分支",               "frequency": "高", "category": "killable"},
-      {"id": "CONSTANT_RETURN",          "name": "常量返回值",               "frequency": "中", "category": "killable"},
-      {"id": "MATH_EQUIVALENT",          "name": "数学运算等价",             "frequency": "中", "category": "killable"},
-      {"id": "LOOP_SIDE_EFFECT",         "name": "循环副作用",               "frequency": "低", "category": "killable"},
-      {"id": "INTERNAL_STATE",           "name": "内部状态差异",             "frequency": "中", "category": "killable"},
-      {"id": "ANIMATION_RESTORE",        "name": "动画状态恢复等价",         "frequency": "高", "category": "equivalent"},
-      {"id": "HEADLESS_TRAP",            "name": "Headless环境陷阱",        "frequency": "中", "category": "environment"},
-      {"id": "TERNARY_SYMMETRY",         "name": "三元最值对称性",           "frequency": "中", "category": "equivalent"},
-      {"id": "POLYMORPHIC_DEFAULT",      "name": "多态基类默认路径",         "frequency": "中", "category": "technique"},
-      {"id": "INFINITE_LOOP_TIMEOUT",    "name": "无限循环超时(有效杀死)",   "frequency": "低", "category": "valid_kill"},
-      {"id": "GENERIC_TYPE_MISMATCH",    "name": "泛型类型不匹配",           "frequency": "高", "category": "compile"},
-      {"id": "CAPACITY_EQUIVALENT",      "name": "ArrayList初始容量等价",    "frequency": "中", "category": "equivalent"},
-      {"id": "DEAD_COMPOUND_CONDITION",  "name": "复合条件死代码",           "frequency": "中", "category": "equivalent"},
-      {"id": "BINARY_SEARCH_BOUNDARY",   "name": "二分搜索边界等价",         "frequency": "中", "category": "equivalent"},
-      {"id": "SELF_CONSISTENT_METHOD",   "name": "自洽内部方法",             "frequency": "中", "category": "killable"},
-      {"id": "TREE_SPLIT_COVERAGE",      "name": "B+Tree分裂路径覆盖",      "frequency": "高", "category": "killable"},
-      {"id": "PROBABILISTIC_CONSTRUCTOR","name": "概率性构造器参数",         "frequency": "低", "category": "killable"},
-      {"id": "WRAPPER_VOID_EQUIVALENCE", "name": "包装器VOID调用等价",      "frequency": "高", "category": "equivalent"}
+      {
+        "id": "BOUNDARY_VALUE",
+        "name": "边界条件未触及",
+        "frequency": "高",
+        "category": "killable"
+      },
+      {
+        "id": "VOID_CALL_REMOVAL",
+        "name": "Void方法调用移除",
+        "frequency": "高",
+        "category": "killable"
+      },
+      {
+        "id": "UNCOLLECTED_BRANCH",
+        "name": "未覆盖分支",
+        "frequency": "高",
+        "category": "killable"
+      },
+      {
+        "id": "CONSTANT_RETURN",
+        "name": "常量返回值",
+        "frequency": "中",
+        "category": "killable"
+      },
+      {
+        "id": "MATH_EQUIVALENT",
+        "name": "数学运算等价",
+        "frequency": "中",
+        "category": "killable"
+      },
+      {
+        "id": "LOOP_SIDE_EFFECT",
+        "name": "循环副作用",
+        "frequency": "低",
+        "category": "killable"
+      },
+      {
+        "id": "INTERNAL_STATE",
+        "name": "内部状态差异",
+        "frequency": "中",
+        "category": "killable"
+      },
+      {
+        "id": "ANIMATION_RESTORE",
+        "name": "动画状态恢复等价",
+        "frequency": "高",
+        "category": "equivalent"
+      },
+      {
+        "id": "HEADLESS_TRAP",
+        "name": "Headless环境陷阱",
+        "frequency": "中",
+        "category": "environment"
+      },
+      {
+        "id": "TERNARY_SYMMETRY",
+        "name": "三元最值对称性",
+        "frequency": "中",
+        "category": "equivalent"
+      },
+      {
+        "id": "POLYMORPHIC_DEFAULT",
+        "name": "多态基类默认路径",
+        "frequency": "中",
+        "category": "technique"
+      },
+      {
+        "id": "INFINITE_LOOP_TIMEOUT",
+        "name": "无限循环超时(有效杀死)",
+        "frequency": "低",
+        "category": "valid_kill"
+      },
+      {
+        "id": "GENERIC_TYPE_MISMATCH",
+        "name": "泛型类型不匹配",
+        "frequency": "高",
+        "category": "compile"
+      },
+      {
+        "id": "CAPACITY_EQUIVALENT",
+        "name": "ArrayList初始容量等价",
+        "frequency": "中",
+        "category": "equivalent"
+      },
+      {
+        "id": "DEAD_COMPOUND_CONDITION",
+        "name": "复合条件死代码",
+        "frequency": "中",
+        "category": "equivalent"
+      },
+      {
+        "id": "BINARY_SEARCH_BOUNDARY",
+        "name": "二分搜索边界等价",
+        "frequency": "中",
+        "category": "equivalent"
+      },
+      {
+        "id": "SELF_CONSISTENT_METHOD",
+        "name": "自洽内部方法",
+        "frequency": "中",
+        "category": "killable"
+      },
+      {
+        "id": "TREE_SPLIT_COVERAGE",
+        "name": "B+Tree分裂路径覆盖",
+        "frequency": "高",
+        "category": "killable"
+      },
+      {
+        "id": "PROBABILISTIC_CONSTRUCTOR",
+        "name": "概率性构造器参数",
+        "frequency": "低",
+        "category": "killable"
+      },
+      {
+        "id": "WRAPPER_VOID_EQUIVALENCE",
+        "name": "包装器VOID调用等价",
+        "frequency": "高",
+        "category": "equivalent"
+      },
+      {
+        "id": "FIXED_POINT_CLAMP",
+        "name": "钳制边界自映射(BOUNDARY等价)",
+        "frequency": "高",
+        "category": "equivalent"
+      },
+      {
+        "id": "FLOOR_MASKED_CLAMP",
+        "name": "下限钳制被地板值掩盖",
+        "frequency": "中",
+        "category": "equivalent"
+      }
     ]
   },
-
   "killing_rules_index": {
     "_note": "Operator → one-line strategy mapping for quick dispatch. Full code examples in skill.md Mutation Operators section.",
     "rules": [
-      {"operator": "CONDITIONALS_BOUNDARY_MUTATOR",            "strategy": "精确边界值; 构造器屏蔽的边界用反射注入"},
-      {"operator": "VOID_METHOD_CALL_MUTATOR",                 "strategy": "验证副作用(状态/输出/异常); 链式void分场景覆盖; 动画用Counting Subclass"},
-      {"operator": "MATH_MUTATOR",                             "strategy": "不对称测试数据(避免0/1); 数组索引全遍历; 构造器参数断言对象内部字段"},
-      {"operator": "RETURN_VALS_MUTATOR",                      "strategy": "精确值断言(assertEquals); 禁止仅assertNotNull/assertTrue"},
-      {"operator": "INCREMENTS_MUTATOR",                       "strategy": "验证精确迭代次数; 断言循环变量最终值"},
-      {"operator": "INVERT_NEGS_MUTATOR",                      "strategy": "数值否定: 正负混合; 布尔否定: 测试true/false双分支"},
-      {"operator": "NEGATE_CONDITIONALS_MUTATOR",              "strategy": "覆盖条件true和false两个分支"},
-      {"operator": "EMPTY_RETURNS_MUTATOR",                    "strategy": "String/集合精确值断言; 禁止assertNotNull"},
-      {"operator": "NULL_RETURNS_MUTATOR",                     "strategy": "链式调用(.getX().getY())间接杀活null返回(NPE)"},
-      {"operator": "PRIMITIVE_RETURNS_MUTATOR",                "strategy": "精确值断言; 禁止assertTrue/assertFalse"},
-      {"operator": "TRUE_RETURNS",                             "strategy": "断言返回false的路径存在并测试"},
-      {"operator": "FALSE_RETURNS",                            "strategy": "断言返回true的路径存在并测试"},
-      {"operator": "CONSTRUCTOR_CALLS_MUTATOR",                "strategy": "断言字段非空且正确初始化"},
-      {"operator": "REMOVE_CONDITIONALS_EQUAL_ELSE",           "strategy": "覆盖if/else双分支; if分支产生可观测差异状态"},
-      {"operator": "REMOVE_CONDITIONALS_ORDER_ELSE",           "strategy": "使循环体执行2+次触发AIOOBE或错误状态"},
-      {"operator": "REMOVE_CONDITIONALS_EQUAL_IF",             "strategy": "构造else分支产生非默认值的场景"}
+      {
+        "operator": "CONDITIONALS_BOUNDARY_MUTATOR",
+        "strategy": "精确边界值; 构造器屏蔽的边界用反射注入"
+      },
+      {
+        "operator": "VOID_METHOD_CALL_MUTATOR",
+        "strategy": "验证副作用(状态/输出/异常); 链式void分场景覆盖; 动画用Counting Subclass"
+      },
+      {
+        "operator": "MATH_MUTATOR",
+        "strategy": "不对称测试数据(避免0/1); 数组索引全遍历; 构造器参数断言对象内部字段"
+      },
+      {
+        "operator": "RETURN_VALS_MUTATOR",
+        "strategy": "精确值断言(assertEquals); 禁止仅assertNotNull/assertTrue"
+      },
+      {
+        "operator": "INCREMENTS_MUTATOR",
+        "strategy": "验证精确迭代次数; 断言循环变量最终值"
+      },
+      {
+        "operator": "INVERT_NEGS_MUTATOR",
+        "strategy": "数值否定: 正负混合; 布尔否定: 测试true/false双分支"
+      },
+      {
+        "operator": "NEGATE_CONDITIONALS_MUTATOR",
+        "strategy": "覆盖条件true和false两个分支"
+      },
+      {
+        "operator": "EMPTY_RETURNS_MUTATOR",
+        "strategy": "String/集合精确值断言; 禁止assertNotNull"
+      },
+      {
+        "operator": "NULL_RETURNS_MUTATOR",
+        "strategy": "链式调用(.getX().getY())间接杀活null返回(NPE)"
+      },
+      {
+        "operator": "PRIMITIVE_RETURNS_MUTATOR",
+        "strategy": "精确值断言; 禁止assertTrue/assertFalse"
+      },
+      {
+        "operator": "TRUE_RETURNS",
+        "strategy": "断言返回false的路径存在并测试"
+      },
+      {
+        "operator": "FALSE_RETURNS",
+        "strategy": "断言返回true的路径存在并测试"
+      },
+      {
+        "operator": "CONSTRUCTOR_CALLS_MUTATOR",
+        "strategy": "断言字段非空且正确初始化"
+      },
+      {
+        "operator": "REMOVE_CONDITIONALS_EQUAL_ELSE",
+        "strategy": "覆盖if/else双分支; if分支产生可观测差异状态"
+      },
+      {
+        "operator": "REMOVE_CONDITIONALS_ORDER_ELSE",
+        "strategy": "使循环体执行2+次触发AIOOBE或错误状态"
+      },
+      {
+        "operator": "REMOVE_CONDITIONALS_EQUAL_IF",
+        "strategy": "构造else分支产生非默认值的场景"
+      }
     ]
   },
-
   "test_patterns_index": {
     "_note": "Pattern name → source project mapping. Full code templates in skill.md Test Patterns Catalog.",
     "patterns": [
-      {"name": "反射私有方法测试",           "source": "Square, Student-Grade-System"},
-      {"name": "输出捕获验证",               "source": "PathFinding, Library, FastestRoute"},
-      {"name": "参数化多配置测试",           "source": "Square, Library"},
-      {"name": "单例反射重置",               "source": "ElevatorManager"},
-      {"name": "JUnit 5 assertThrows 异常断言", "source": "UnrolledLinkedList2023, Square"},
-      {"name": "边界值测试套件",             "source": "Credit-Card-Validator"},
-      {"name": "并发修改检测",               "source": "UnrolledLinkedList2023"},
-      {"name": "深度遍历验证",               "source": "WeightBalancedTree2023, BPlusTree"},
-      {"name": "加密-解密循环验证",          "source": "Square"},
-      {"name": "反射边界值注入",             "source": "Nextday"},
-      {"name": "平台无关输出捕获",           "source": "Nextday"},
-      {"name": "数组索引全遍历杀活",         "source": "Nextday"},
-      {"name": "内部状态探查",               "source": "UnrolledLinkedList2023"},
-      {"name": "后向循环多迭代触发",         "source": "UnrolledLinkedList2023"},
-      {"name": "计数子类模式",               "source": "P_Queue"},
-      {"name": "构造函数参数MATH杀活",       "source": "P_Queue"},
-      {"name": "前置条件操纵边界",           "source": "P_Queue"},
-      {"name": "子类部分模拟",               "source": "P_Queue"},
-      {"name": "同包测试前提声明",           "source": "P_Queue"},
-      {"name": "匿名子类不覆写基类方法",     "source": "CMD"},
-      {"name": "反射Map状态注入",            "source": "CMD"},
-      {"name": "泛型便利方法类型声明",       "source": "CMD"},
-      {"name": "文件与URL双路径测试",       "source": "P_Queue"}
+      {
+        "name": "反射私有方法测试",
+        "source": "Square, Student-Grade-System"
+      },
+      {
+        "name": "输出捕获验证",
+        "source": "PathFinding, Library, FastestRoute"
+      },
+      {
+        "name": "参数化多配置测试",
+        "source": "Square, Library"
+      },
+      {
+        "name": "单例反射重置",
+        "source": "ElevatorManager"
+      },
+      {
+        "name": "JUnit 5 assertThrows 异常断言",
+        "source": "UnrolledLinkedList2023, Square"
+      },
+      {
+        "name": "边界值测试套件",
+        "source": "Credit-Card-Validator"
+      },
+      {
+        "name": "并发修改检测",
+        "source": "UnrolledLinkedList2023"
+      },
+      {
+        "name": "深度遍历验证",
+        "source": "WeightBalancedTree2023, BPlusTree"
+      },
+      {
+        "name": "加密-解密循环验证",
+        "source": "Square"
+      },
+      {
+        "name": "反射边界值注入",
+        "source": "Nextday"
+      },
+      {
+        "name": "平台无关输出捕获",
+        "source": "Nextday"
+      },
+      {
+        "name": "数组索引全遍历杀活",
+        "source": "Nextday"
+      },
+      {
+        "name": "内部状态探查",
+        "source": "UnrolledLinkedList2023"
+      },
+      {
+        "name": "后向循环多迭代触发",
+        "source": "UnrolledLinkedList2023"
+      },
+      {
+        "name": "计数子类模式",
+        "source": "P_Queue"
+      },
+      {
+        "name": "构造函数参数MATH杀活",
+        "source": "P_Queue"
+      },
+      {
+        "name": "前置条件操纵边界",
+        "source": "P_Queue"
+      },
+      {
+        "name": "子类部分模拟",
+        "source": "P_Queue"
+      },
+      {
+        "name": "同包测试前提声明",
+        "source": "P_Queue"
+      },
+      {
+        "name": "匿名子类不覆写基类方法",
+        "source": "CMD"
+      },
+      {
+        "name": "反射Map状态注入",
+        "source": "CMD"
+      },
+      {
+        "name": "泛型便利方法类型声明",
+        "source": "CMD"
+      },
+      {
+        "name": "文件与URL双路径测试",
+        "source": "P_Queue"
+      }
     ]
   },
-
   "project_statistics": {
     "_note": "Canonical project data. Summary of all 24 projects analyzed for this skill.",
     "summary": {
-      "total_projects": 25,
-      "total_mutants": 10113,
-      "killed_mutants": 7688,
-      "survived_mutants": 2425,
-      "equivalent_mutants": 498,
+      "total_projects": 26,
+      "total_mutants": 10418,
+      "killed_mutants": 7969,
+      "survived_mutants": 2449,
+      "equivalent_mutants": 522,
       "average_coverage_algorithmic": "86.5%",
       "average_coverage_gui": "25-60%",
       "wrapper_project_coverage_ceiling": "65-75%"
     },
     "projects": [
-      {"name": "CMD",                       "mutants": 72,   "coverage": "100%",  "type": "algorithmic",    "equivalent": 0,  "key_patterns": ["POLYMORPHIC_DEFAULT", "REFLECTION_MAP_STATE_INJECTION", "INFINITE_LOOP_TIMEOUT"]},
-      {"name": "Credit-Card-Validator",     "mutants": 255,  "coverage": "100%",  "type": "algorithmic",    "equivalent": 0},
-      {"name": "MementoX",                  "mutants": 180,  "coverage": "100%",  "type": "algorithmic",    "equivalent": 0},
-      {"name": "Nextday",                   "mutants": 98,   "coverage": "99%",   "type": "algorithmic",    "equivalent": 1},
-      {"name": "Research-Project-Mgmt",     "mutants": 333,  "coverage": "99%",   "type": "algorithmic",    "equivalent": 0},
-      {"name": "Student-Grade-System",      "mutants": 201,  "coverage": "99%",   "type": "algorithmic",    "equivalent": 0},
-      {"name": "SimpleAlgorithms",          "mutants": 440,  "coverage": "96%",   "type": "algorithmic",    "equivalent": 0},
-      {"name": "UnrolledLinkedList2023",    "mutants": 256,  "coverage": "91.8%", "type": "algorithmic",    "equivalent": 21},
-      {"name": "MonteCarlofor2048",         "mutants": 366,  "coverage": "89%",   "type": "algorithmic",    "equivalent": 0},
-      {"name": "SortFactory",               "mutants": 368,  "coverage": "89%",   "type": "algorithmic",    "equivalent": 0},
-      {"name": "PathFinding",               "mutants": 405,  "coverage": "88%",   "type": "algorithmic",    "equivalent": 0},
-      {"name": "BPlusTree",                 "mutants": 248,  "coverage": "85%",   "type": "algorithmic",    "equivalent": 13, "lines_covered": "299/305", "key_patterns": ["SELF_CONSISTENT_METHOD", "PROBABILISTIC_CONSTRUCTOR", "CAPACITY_EQUIVALENT", "DEAD_COMPOUND_CONDITION", "BINARY_SEARCH_BOUNDARY", "TREE_SPLIT_COVERAGE"]},
-      {"name": "MethodHandle",              "mutants": 490,  "coverage": "88%",   "type": "framework",      "equivalent": 57, "lines_covered": "701/770", "notes": "Java MethodHandle适配器框架(invokebinder) — 19业务类单文件聚合304测试；框架终端方法(invoke*/getField/setField)需应用上下文、Transform.up()因MethodHandle严格类型匹配不可达；确认Pattern 1/3/7/20在此类项目中高频出现", "key_patterns": ["WRAPPER_VOID_EQUIVALENCE", "DOMINATED_CONDITION", "COUNTER_MONOTONICITY"]},
-      {"name": "Library",                   "mutants": 261,  "coverage": "85%",   "type": "algorithmic",    "equivalent": 0},
-      {"name": "FastestRoute",              "mutants": 219,  "coverage": "85%",   "type": "algorithmic",    "equivalent": 0},
-      {"name": "Square",                    "mutants": 449,  "coverage": "82%",   "type": "algorithmic",    "equivalent": 0},
-      {"name": "ElevatorManager",           "mutants": 268,  "coverage": "75%",   "type": "algorithmic",    "equivalent": 0},
-      {"name": "WeightBalancedTree2023",    "mutants": 191,  "coverage": "59%",   "type": "algorithmic",    "equivalent": 0},
-      {"name": "P_Queue",                   "mutants": 1032, "coverage": "33%",   "type": "gui/animation",  "equivalent": 185, "notes": "Animation State Restoration + Headless环境限制"},
-      {"name": "FastJson",                  "mutants": 551,  "coverage": "68%",   "type": "wrapper",        "equivalent": 95,  "lines_covered": "866/966", "notes": "Alibaba fastjson 1.2.70包装器 - VOID_METHOD_CALL在库内部对象上等价 + 包装器项目覆盖率天花板~68%", "key_patterns": ["WRAPPER_VOID_EQUIVALENCE", "ASSERT_SAME_FOR_INSTANCEOF", "ORDERED_MAP_INSERTION_ORDER"]},
-      {"name": "Anagram",                   "mutants": 96,   "coverage": "80%",   "type": "algorithmic",    "equivalent": 19, "lines_covered": "186/193", "notes": "字符串变位词求解器(Helper/Dictionary/Anagram 3类) - 单文件聚合80测试；递归算法中优化守卫等价(5处REMOVE_CONDITIONALS)+null≈emptySet等价(2处EMPTY_RETURNS)+防御性null检查等价(3处)+for循环边界守卫等价(2处)+死代码usage()(4处NO_COVERAGE)", "key_patterns": ["DOMINATED_CONDITION", "WRAPPER_VOID_EQUIVALENCE", "DEFENSIVE_REDUNDANCY"]},
-      {"name": "Hotel",                     "mutants": 262,  "coverage": "94%",   "type": "algorithmic",    "equivalent": 14, "lines_covered": "386/390", "notes": "酒店管理系统(13业务类,状态机+排序+价格计算) - 单文件聚合~228测试；8类100%+7算子100%含MATH(100%)；发现setPrice()去耦构造器关联MATH的击杀技术；P1支配条件(contains(\"00\")支配≤100 + 外循环被内循环支配)、P16复合死码(字符范围OR)、P20 VOID等价(setItems冗余+println空行) 全部验证；14个确定性等价变异体", "key_patterns": ["DOMINATED_CONDITION", "COMPOUND_DEAD_CODE", "WRAPPER_VOID_EQUIVALENCE", "SELF_CONSISTENT_METHOD"]},
-      {"name": "Brainfuck",                 "mutants": 145,  "coverage": "98%",   "type": "algorithmic",    "equivalent": 25, "lines_covered": "210/215", "notes": "Brainfuck/Ook!/TrollScript解释器(3业务类继承链) - 单文件聚合110测试", "key_patterns": ["DEAD_STORE_INITATE", "TERNARY_SYMMETRY", "DEFENSIVE_REDUNDANCY", "COMPOUND_DEAD_CODE"]},
-      {"name": "OASYS",                     "mutants": 1012, "coverage": "93%",   "type": "algorithmic",    "equivalent": 30, "lines_covered": "1319/1414", "notes": "企业OA系统(19业务类,含考勤/费用/权限/工作流/休假5个子系统) - 单文件聚合~500测试@Nested模式；561 killed (55% mutation)；方法/类覆盖100%；P21等级乘数开关缺口+P22 Record紧凑构造器NPE；JaCoCo+PIT双分析实现80%分支+95%行覆盖", "key_patterns": ["GRADE_MULTIPLIER_SWITCH_GAP", "RECORD_CONSTRUCTOR_METHOD_NPE", "SINGLE_FILE_NESTED_AGGREGATION", "JACOCO_PIT_DUAL_ANALYSIS"]},
-      {"name": "Online-Edu",                "mutants": 1388, "coverage": "85%",   "type": "algorithmic",    "equivalent": 30, "lines_covered": "1251/1741", "mutation_coverage": "43%", "notes": "Spring Boot 3.5在线教育平台(9业务类:考试评分/学习进度/报名资格/退款策略/高级定价/排课调度+价格策略/课程管理/目录服务) - 单文件聚合~5400行450+测试@Nested模式；PIT 4%→34%→43% (591/1388)；JaCoCo 9%→72%→85%行/73%分支/96%方法；小型类(record/adapter/web/config/common)全部100%；发现包级私有Spring @Bean反射覆盖+验证主导死分支(P1: maxPoints≤0被前置验证屏蔽)+Record紧凑构造器List.copyOf拒null", "key_patterns": ["SINGLE_FILE_NESTED_AGGREGATION", "JACOCO_PIT_DUAL_ANALYSIS", "DOMINATED_CONDITION", "SPRING_SERVICE_CLOCK_DI"]}
+      {
+        "name": "CMD",
+        "mutants": 72,
+        "coverage": "100%",
+        "type": "algorithmic",
+        "equivalent": 0,
+        "key_patterns": [
+          "POLYMORPHIC_DEFAULT",
+          "REFLECTION_MAP_STATE_INJECTION",
+          "INFINITE_LOOP_TIMEOUT"
+        ]
+      },
+      {
+        "name": "Credit-Card-Validator",
+        "mutants": 255,
+        "coverage": "100%",
+        "type": "algorithmic",
+        "equivalent": 0
+      },
+      {
+        "name": "MementoX",
+        "mutants": 180,
+        "coverage": "100%",
+        "type": "algorithmic",
+        "equivalent": 0
+      },
+      {
+        "name": "Nextday",
+        "mutants": 98,
+        "coverage": "99%",
+        "type": "algorithmic",
+        "equivalent": 1
+      },
+      {
+        "name": "Research-Project-Mgmt",
+        "mutants": 333,
+        "coverage": "99%",
+        "type": "algorithmic",
+        "equivalent": 0
+      },
+      {
+        "name": "Student-Grade-System",
+        "mutants": 201,
+        "coverage": "99%",
+        "type": "algorithmic",
+        "equivalent": 0
+      },
+      {
+        "name": "SimpleAlgorithms",
+        "mutants": 440,
+        "coverage": "96%",
+        "type": "algorithmic",
+        "equivalent": 0
+      },
+      {
+        "name": "UnrolledLinkedList2023",
+        "mutants": 256,
+        "coverage": "91.8%",
+        "type": "algorithmic",
+        "equivalent": 21
+      },
+      {
+        "name": "MonteCarlofor2048",
+        "mutants": 366,
+        "coverage": "89%",
+        "type": "algorithmic",
+        "equivalent": 0
+      },
+      {
+        "name": "SortFactory",
+        "mutants": 368,
+        "coverage": "89%",
+        "type": "algorithmic",
+        "equivalent": 0
+      },
+      {
+        "name": "PathFinding",
+        "mutants": 405,
+        "coverage": "88%",
+        "type": "algorithmic",
+        "equivalent": 0
+      },
+      {
+        "name": "BPlusTree",
+        "mutants": 248,
+        "coverage": "85%",
+        "type": "algorithmic",
+        "equivalent": 13,
+        "lines_covered": "299/305",
+        "key_patterns": [
+          "SELF_CONSISTENT_METHOD",
+          "PROBABILISTIC_CONSTRUCTOR",
+          "CAPACITY_EQUIVALENT",
+          "DEAD_COMPOUND_CONDITION",
+          "BINARY_SEARCH_BOUNDARY",
+          "TREE_SPLIT_COVERAGE"
+        ]
+      },
+      {
+        "name": "MethodHandle",
+        "mutants": 490,
+        "coverage": "88%",
+        "type": "framework",
+        "equivalent": 57,
+        "lines_covered": "701/770",
+        "notes": "Java MethodHandle适配器框架(invokebinder) — 19业务类单文件聚合304测试；框架终端方法(invoke*/getField/setField)需应用上下文、Transform.up()因MethodHandle严格类型匹配不可达；确认Pattern 1/3/7/20在此类项目中高频出现",
+        "key_patterns": [
+          "WRAPPER_VOID_EQUIVALENCE",
+          "DOMINATED_CONDITION",
+          "COUNTER_MONOTONICITY"
+        ]
+      },
+      {
+        "name": "Library",
+        "mutants": 261,
+        "coverage": "85%",
+        "type": "algorithmic",
+        "equivalent": 0
+      },
+      {
+        "name": "FastestRoute",
+        "mutants": 219,
+        "coverage": "85%",
+        "type": "algorithmic",
+        "equivalent": 0
+      },
+      {
+        "name": "Square",
+        "mutants": 449,
+        "coverage": "82%",
+        "type": "algorithmic",
+        "equivalent": 0
+      },
+      {
+        "name": "ElevatorManager",
+        "mutants": 268,
+        "coverage": "75%",
+        "type": "algorithmic",
+        "equivalent": 0
+      },
+      {
+        "name": "WeightBalancedTree2023",
+        "mutants": 191,
+        "coverage": "59%",
+        "type": "algorithmic",
+        "equivalent": 0
+      },
+      {
+        "name": "P_Queue",
+        "mutants": 1032,
+        "coverage": "33%",
+        "type": "gui/animation",
+        "equivalent": 185,
+        "notes": "Animation State Restoration + Headless环境限制"
+      },
+      {
+        "name": "FastJson",
+        "mutants": 551,
+        "coverage": "68%",
+        "type": "wrapper",
+        "equivalent": 95,
+        "lines_covered": "866/966",
+        "notes": "Alibaba fastjson 1.2.70包装器 - VOID_METHOD_CALL在库内部对象上等价 + 包装器项目覆盖率天花板~68%",
+        "key_patterns": [
+          "WRAPPER_VOID_EQUIVALENCE",
+          "ASSERT_SAME_FOR_INSTANCEOF",
+          "ORDERED_MAP_INSERTION_ORDER"
+        ]
+      },
+      {
+        "name": "Anagram",
+        "mutants": 96,
+        "coverage": "80%",
+        "type": "algorithmic",
+        "equivalent": 19,
+        "lines_covered": "186/193",
+        "notes": "字符串变位词求解器(Helper/Dictionary/Anagram 3类) - 单文件聚合80测试；递归算法中优化守卫等价(5处REMOVE_CONDITIONALS)+null≈emptySet等价(2处EMPTY_RETURNS)+防御性null检查等价(3处)+for循环边界守卫等价(2处)+死代码usage()(4处NO_COVERAGE)",
+        "key_patterns": [
+          "DOMINATED_CONDITION",
+          "WRAPPER_VOID_EQUIVALENCE",
+          "DEFENSIVE_REDUNDANCY"
+        ]
+      },
+      {
+        "name": "Hotel",
+        "mutants": 262,
+        "coverage": "94%",
+        "type": "algorithmic",
+        "equivalent": 14,
+        "lines_covered": "386/390",
+        "notes": "酒店管理系统(13业务类,状态机+排序+价格计算) - 单文件聚合~228测试；8类100%+7算子100%含MATH(100%)；发现setPrice()去耦构造器关联MATH的击杀技术；P1支配条件(contains(\"00\")支配≤100 + 外循环被内循环支配)、P16复合死码(字符范围OR)、P20 VOID等价(setItems冗余+println空行) 全部验证；14个确定性等价变异体",
+        "key_patterns": [
+          "DOMINATED_CONDITION",
+          "COMPOUND_DEAD_CODE",
+          "WRAPPER_VOID_EQUIVALENCE",
+          "SELF_CONSISTENT_METHOD"
+        ]
+      },
+      {
+        "name": "Brainfuck",
+        "mutants": 145,
+        "coverage": "98%",
+        "type": "algorithmic",
+        "equivalent": 25,
+        "lines_covered": "210/215",
+        "notes": "Brainfuck/Ook!/TrollScript解释器(3业务类继承链) - 单文件聚合110测试",
+        "key_patterns": [
+          "DEAD_STORE_INITATE",
+          "TERNARY_SYMMETRY",
+          "DEFENSIVE_REDUNDANCY",
+          "COMPOUND_DEAD_CODE"
+        ]
+      },
+      {
+        "name": "OASYS",
+        "mutants": 1012,
+        "coverage": "93%",
+        "type": "algorithmic",
+        "equivalent": 30,
+        "lines_covered": "1319/1414",
+        "notes": "企业OA系统(19业务类,含考勤/费用/权限/工作流/休假5个子系统) - 单文件聚合~500测试@Nested模式；561 killed (55% mutation)；方法/类覆盖100%；P21等级乘数开关缺口+P22 Record紧凑构造器NPE；JaCoCo+PIT双分析实现80%分支+95%行覆盖",
+        "key_patterns": [
+          "GRADE_MULTIPLIER_SWITCH_GAP",
+          "RECORD_CONSTRUCTOR_METHOD_NPE",
+          "SINGLE_FILE_NESTED_AGGREGATION",
+          "JACOCO_PIT_DUAL_ANALYSIS"
+        ]
+      },
+      {
+        "name": "Online-Edu",
+        "mutants": 1388,
+        "coverage": "85%",
+        "type": "algorithmic",
+        "equivalent": 30,
+        "lines_covered": "1251/1741",
+        "mutation_coverage": "43%",
+        "notes": "Spring Boot 3.5在线教育平台(9业务类:考试评分/学习进度/报名资格/退款策略/高级定价/排课调度+价格策略/课程管理/目录服务) - 单文件聚合~5400行450+测试@Nested模式；PIT 4%→34%→43% (591/1388)；JaCoCo 9%→72%→85%行/73%分支/96%方法；小型类(record/adapter/web/config/common)全部100%；发现包级私有Spring @Bean反射覆盖+验证主导死分支(P1: maxPoints≤0被前置验证屏蔽)+Record紧凑构造器List.copyOf拒null",
+        "key_patterns": [
+          "SINGLE_FILE_NESTED_AGGREGATION",
+          "JACOCO_PIT_DUAL_ANALYSIS",
+          "DOMINATED_CONDITION",
+          "SPRING_SERVICE_CLOCK_DI"
+        ]
+      },
+      {
+        "name": "Research-Project-Management-System",
+        "mutants": 305,
+        "coverage": "92%",
+        "type": "algorithmic",
+        "equivalent": 24,
+        "lines_covered": "399/401",
+        "mutation_coverage": "92%",
+        "notes": "科研项目管理(14业务类:预算/背包优化/拓扑与关键路径/排程/匹配/风险蒙特卡洛/资源预约/任务/人员) - 单文件聚合138测试；PIT 85%→92%(281/305)，剩余24个为钳制型等价(18 BOUNDARY/3 ORDER_ELSE/2 MATH/1 EQUAL_ELSE)；复检纠正1个误判(Researcher.releaseHours(0)在capacity=100时可杀)，并用±0.0符号位/容器可变性再杀5个；JaCoCo 行405/405、分支240/240、方法129/129、类20/20 全100%；关键击杀：异常消息区分、黄金序列杀PRNG移位、毫秒窗口反算ID位布局、反射压AtomicLong进负分支、工具类私有构造器",
+        "key_patterns": [
+          "SINGLE_FILE_AGGREGATION",
+          "P23_FIXED_POINT_CLAMP",
+          "ESCAPE_HATCH_NEGATIVE_ZERO",
+          "ESCAPE_HATCH_HIDDEN_STATE",
+          "TP26_GOLDEN_SEQUENCE",
+          "TP27_EXCEPTION_MESSAGE",
+          "TP28_ESCAPE_HATCHES"
+        ]
+      }
     ]
   }
 }

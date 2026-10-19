@@ -7,6 +7,29 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [v2.8.0] - 2026-10-19
+
+> 同日两次改动（新增 P23/P24 + 复检修正）按“同一天只升一次版本”规则合并为本条。
+
+### Fixed
+- **P23 判定过于绝对（重要修正）** — 初版写“钳制边界一律等价、不要再写测试”，被复检证伪：30 个存活体里有 6 个（20%）可杀。P23 现改为“先试 3 类逃生口，全不成立才判等价”，并附判定流程图
+- **`assertEquals(a,b,delta)` 看不见 ±0.0** — 补入逃生口①：`x < 0` 与 `x <= 0` 在 `x = -0.0` 处结论相反，必须用 `Double.doubleToRawLongBits`
+
+### Added
+- **P23 Fixed-Point Clamp 三类逃生口** — ① ±0.0 符号位 ② 隐藏状态破坏不变量（构造器允许越界 → `releaseHours(0)` 从“无操作”变成“归一为上限”）③ 后续算术吸收（吸收掉才是真等价）
+- **P24 Floor-Masked Lower Clamp** — 下限钳制被后续 `max()/floor` 吞掉，REMOVE_CONDITIONALS 不可观测
+- **TP26 黄金序列 + 位布局反射** — 固定种子 PRNG 用黄金序列逐值精杀移位变异；时间相关 ID 用 `before==after` 毫秒窗口 + 反射读计数器反算
+- **TP27 异常消息区分** — 统一异常出口（catch 后重包装）会让 `assertThrows(类型)` 失效，必须升级到 `getMessage()`
+- **TP28 边界等价体三类逃生口** — 含三段可直接复用的测试代码
+- 10 条 common-mistakes：异常类型断言、ID/PRNG 弱断言、依赖链累加假设、`floorEntry` 语义、构造器 clamp 未核对、见钳制就判等价、用 delta 比较 ±0.0、只按合法区间设计输入、EMPTY_RETURNS 一律判等价
+- **Research-Project-Management-System 项目** — 14 业务类、305 变异体、281 击杀（92%）、JaCoCo 全 100%
+
+### Changed
+- 项目总数: 25→26, 变异体总数: 10,113→10,418, 存活模式: 22→24, 测试模式: 25→28
+- 累计击杀 7,688→7,969，等价体 498→522
+
+---
+
 ## [v2.6.0] - 2026-07-23
 
 ### Added
