@@ -82,3 +82,31 @@ PIT reports three metrics per class/package:
 - **ArrayList capacity MATH**: #1 equivalent mutant pattern in collection-heavy Java projects
 - **Weak assertions on tree splits**: #1 cause of survived MATH in B+Tree projects
 - **Wrapper/library project VOID equivalence**: #1 cause of survived VOID_METHOD_CALL in wrapper projects
+
+---
+
+## Locating the Last 1% (100% 缺口的逐行定位)
+
+当 PIT 显示 96%~99% 而你说不清差在哪时，不要靠猜。直接解析 `target/site/jacoco/jacoco.xml`：
+
+```python
+import xml.etree.ElementTree as ET
+r = ET.parse('target/site/jacoco/jacoco.xml').getroot()
+for pkg in r.iter('package'):
+    for sf in pkg.findall('sourcefile'):
+        miss = [l for l in sf.findall('line') if int(l.get('mi')) > 0]
+        if miss:
+            print(sf.get('name'),
+                  ' '.join('L%s(mi=%s,mb=%s)' % (l.get('nr'), l.get('mi'), l.get('mb')) for l in miss))
+```
+
+`mi` = missed instructions（行是否执行），`mb` = missed branches（该行有几个分支没走）。
+
+| 缺口形态 | 典型含义 | 处置 |
+|---|---|---|
+| `mi>0` 且行号 = 类声明行，类内全是 static 方法 | 隐式构造器从未执行 | `assertNotNull(new XxxUtil())`（Pattern 29） |
+| `mi>0` 且行号 = 构造器签名 | 某个重载构造器从未被调用 | 补一条用该构造器的测试 |
+| `mb>0` 且行号 = `while(...)` | 循环“条件为假退出”从未发生（体内全 break） | 死边，写控制流证明 |
+| `mb>0` 且行号 = 重复扫描块内的 `if` | 该块前置守卫已保证不会命中 | 死边 / 源码缺陷（P25） |
+
+**判据：** 一份 500 行量级的项目，若 `mi` 全部落在类声明行/构造器上，补实例化即可；若落在业务分支上，才是真·测试缺口。把这两类分开报告，不要混成一句“覆盖率不够”。

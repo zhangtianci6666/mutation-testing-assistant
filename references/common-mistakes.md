@@ -50,6 +50,8 @@
 | **Assuming all project types have the same coverage ceiling** | **Wrapper: ~65-75%, Algorithmic: ~85-95%, GUI: ~25-60%** |
 | **Killing mutants via reflection tests that later "resurrect" as SURVIVED** | **PIT coverage tracking through `Method.invoke()` is UNRELIABLE. Mutants killed by reflection tests may survive in later runs. Replace with public API path tests whenever possible. For package-private methods in same package, call directly without reflection** |
 | **Using reflection to test private methods and expecting stable PIT coverage** | **Reflection bypasses PIT's bytecode instrumentation for individual lines inside the reflected method. PIT may not select the test for specific mutations. Prefer: 1) public API path, 2) package-private direct access, 3) reflection as last resort** |
+| **JaCoCo 行覆盖率卡在 99%，缺口全在 `public class XxxUtil {` 这类类声明行** | **纯静态工具类的隐式构造器被记在类声明行上，从未 `new` 过就永远未覆盖。在同包测试里 `assertNotNull(new XxxUtil())` 一行覆盖一个类（Pattern 29）。先确认该行确是类声明行，再动手** |
+| **看到 3 个分支差 1%~2% 就继续硬凑测试** | **先逐行定位 `mi>0` / `mb>0`：`while(cond){...全部路径都 break...}` 的条件假分支、`if(!found)` 之后重复同区间的扫描命中分支都是死边，任何输入都走不到。用控制流证明代替瞎试（Pattern 30 的对照实验可作为复核手段）** |
 
 ---
 

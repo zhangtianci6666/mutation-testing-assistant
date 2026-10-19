@@ -559,3 +559,60 @@ public void matchingEmptyResultIsWritableList() {
 3. 逃生口②要找“**写入该字段的所有入口**”，grep 字段名，确认有没有绕过归一化的一条。
 4. 逃生口③会断言返回容器的可变性——属于实现细节，需在注释里说明动机；若团队禁止此类断言，则如实记录为等价。
 5. 这三类都不成立时，等价证明写成三句话：“边界值映射到自身 + 无越界入口 + 结果不进入对符号零敏感的算术”。
+
+---
+
+### Pattern 29: Utility Class Instantiation（纯静态工具类的隐式构造器覆盖）
+
+**场景:** JaCoCo 行覆盖率卡在 99%，缺的那几行全是 `public class XxxParser {`、`public class XxxChecker {` 这类**类声明行**，而类里所有静态方法都已被测试调用。
+
+**根因:** 只含静态方法的工具类没有显式构造器，javac 会合成一个与类同访问级的无参构造器。JaCoCo 把这个隐式构造器的字节码**归到类声明行**上；只要从未 `new` 过，该行就永远是 `mi>0`。这不是测试没走到方法体，而是「构造器从未执行」。
+
+**识别:** 打开 `jacoco.xml`，找 `mi>0` 且 `nr` 等于类声明行的条目；对照源文件确认该类只有静态成员。
+
+```java
+@Test
+void utilityClassDefaultConstructors() {
+    assertNotNull(new CreditCardParser());   // public class，隐式 public 无参构造
+    assertNotNull(new DateParser());
+    assertNotNull(new DateChecker());
+    assertNotNull(new DateFormatter());      // 包级私有类 → 包内测试可直接 new
+    assertNotNull(new TypeChecker());
+}
+```
+
+**规则:**
+1. 一个断言一行，全部写在同一个测试里即可；不要为每个工具类单开测试方法（噪音）。
+2. 包级私有类在同包测试里可直接实例化，不需要反射。
+3. 若类被显式声明为 `private Xxx() {}`（禁止实例化的工具类），那行本来就不会被计数，不要去“强行 new”。
+4. 先确认 `mi>0` 的行确实是类声明行再动手——有些“类声明行未覆盖”是真·构造器里有逻辑。
+
+---
+
+### Pattern 30: Counterfactual Probe（对照实验取证等价变异体）
+
+**场景:** 一批存活变异体都指向同一段代码，你已给出等价性证明，但需要**可复现的实验证据**说服他人（评审、队友、自己复核）。
+
+**做法:** 在**临时副本**里只修掉疑似源码缺陷，源码其余一字不动，用**完全相同**的测试再跑一次 PIT。
+
+```bash
+cp -r src pom.xml /tmp/probe/          # 绝不改交付目录
+cd /tmp/probe
+python - <<'PY'                        # 只改那一处：复制的循环区间
+import io; p='src/main/java/.../VerveValidator.java'
+s=io.open(p,encoding='utf-8').read()
+s=s.replace('for (int i = IINRange[0]; i <= IINRange[1]; i++) {\n                if (IIN == i) {',
+            'for (int i = IINRange[2]; i <= IINRange[3]; i++) {\n                if (IIN == i) {')
+io.open(p,'w',encoding='utf-8').write(s)
+PY
+mvn -o pitest:mutationCoverage -DoutputFormats=XML
+```
+
+**判读:**
+- 修完存活体**成批死亡** → 等价性源于源码缺陷（重复区间 / 死数据 / 不可达分支），不是测试不足。把“修 4 个字符从 96% 跳到 99%”写进报告，比十段逻辑证明更有力。
+- 修完**照样存活** → 你的等价判断可能错了，回去补测试。
+
+**规则:**
+1. 副本必须放在项目外（`/tmp`、`%TEMP%`），跑完即删；交付目录的源码时间戳不能变。
+2. 只改“证明所需的最小一处”，不要顺手重构，否则实验不再单变量。
+3. 实验结论要写成「现状 X% → 修复后 Y%」的对照表，并说明这属于**上报源码缺陷**，不是改源码交付。

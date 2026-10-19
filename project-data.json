@@ -1,15 +1,15 @@
 {
   "skill_metadata": {
     "name": "Mutation Testing Assistant",
-    "description": "基于25个Java项目、10113个变异体分析的PIT变异测试知识库",
-    "version": "v2.8.0",
+    "description": "基于26个Java项目、10435个变异体分析的PIT变异测试知识库",
+    "version": "v2.9.0",
     "language": "Java",
     "framework": "JUnit 5 + PIT",
     "projects_analyzed": 26,
-    "total_mutants": 10418,
-    "killed_mutants": 7969,
-    "survived_mutants": 2449,
-    "equivalent_mutants": 522,
+    "total_mutants": 10435,
+    "killed_mutants": 7975,
+    "survived_mutants": 2459,
+    "equivalent_mutants": 532,
     "average_coverage_algorithmic": "87.3%",
     "average_coverage_gui": "25-60%",
     "equivalent_mutant_rate_algorithmic": "3.0%",
@@ -17,8 +17,9 @@
     "wrapper_project_coverage_ceiling": "65-75%",
     "framework_terminal_method_no_coverage": "~5%",
     "generated_at": "2026-06-02",
-    "last_updated": "2026-07-23T17:30:00+08:00",
+    "last_updated": "2026-10-19T13:55:00+08:00",
     "changelog": [
+      "v2.9.0: 重跑Credit-Card-Validator(272 mutants, 96% mutation, 32业务类, 65测试@Nested单文件聚合) — 覆盖从255 mutants/100%基线更新为272/96%；新增P25重复扫描互为兜底(VerveValidator 506099-506198循环逐字重复导致7个变异体互不可观测，同时暴露650002-650027区间被复制粘贴bug静默禁用)；LuhnValidator确认2个真等价(MATH求和取反整除性对称 P2 + <10分支sumOfDigits恒等 P10)；Validator确认1个P3无条件返回；新增 Pattern29(静态工具类隐式构造器覆盖:JaCoCo 类声明行 mi>0)+Pattern30(对照实验取证:临时副本单变量改源码,96%→99% 证明等价体源于源码缺陷)；pit-metrics 增 100% 缺口 mi/mb 逐行定位表；common-mistakes 增 2 条",
       "v2.6.1: 新增Online-Edu在线教育平台项目(1388 mutants, 43% mutation/34%→43%, 85% line, 9业务类) — Spring Boot 3.5服务架构(6大型Service:考试评分/学习进度/报名资格审查/退款策略/高级定价/排课调度 + 3小型Service:价格策略/课程管理/目录服务)；单文件聚合~5400行450+测试；PIT从4%→34%→43%，JaCoCo从9%→72%→85%行/73%分支/96%方法；小型类全部100%；发现包级私有Spring @Bean反射覆盖技术；Record紧凑构造器List.copyOf拒绝null导致验证死分支；验证主导死分支(P1: maximumPoints.signum()==0被前置验证屏蔽)；common-mistakes新增3条(Mockito.when非mock对象、类型推断Set.of()/List.of()、sed批处理破坏Java源码)",
       "v2.6.0: 新增OASYS考勤/费用/权限/工作流系统项目(1012 mutants, 55% mutation, 93% line, 19类) — 大型企业应用(14+业务类,561杀)单文件聚合~500测试；发现P21等级乘数开关缺口(switch-enum中间值未覆盖)+P22 Record紧凑构造器方法调用NPE(字段未赋值前访问)；新增TP24单文件@Nested聚合模式+TP25 JaCoCo+PIT双分析；Maven source level覆盖问题(显式-Dmaven.compiler.source=21)；common-mistakes新增6条；方法/类覆盖达到100%",
       "v2.5.4: 新增Brainfuck解释器项目(145 mutants, 83% kill, 98% line, 3类)",
@@ -202,6 +203,12 @@
         "name": "下限钳制被地板值掩盖",
         "frequency": "中",
         "category": "equivalent"
+      },
+      {
+        "id": "DUPLICATE_SCAN_MUTUAL_MASK",
+        "name": "重复扫描互为兜底",
+        "frequency": "低",
+        "category": "equivalent"
       }
     ]
   },
@@ -368,6 +375,18 @@
       {
         "name": "文件与URL双路径测试",
         "source": "P_Queue"
+      },
+      {
+        "id": "UTILITY_CLASS_INSTANTIATION",
+        "name": "静态工具类实例化覆盖隐式构造器",
+        "frequency": "中",
+        "category": "line-coverage"
+      },
+      {
+        "id": "COUNTERFACTUAL_PROBE",
+        "name": "对照实验取证等价变异体",
+        "frequency": "低",
+        "category": "equivalence-proof"
       }
     ]
   },
@@ -375,10 +394,10 @@
     "_note": "Canonical project data. Summary of all 24 projects analyzed for this skill.",
     "summary": {
       "total_projects": 26,
-      "total_mutants": 10418,
-      "killed_mutants": 7969,
-      "survived_mutants": 2449,
-      "equivalent_mutants": 522,
+      "total_mutants": 10435,
+      "killed_mutants": 7975,
+      "survived_mutants": 2459,
+      "equivalent_mutants": 532,
       "average_coverage_algorithmic": "86.5%",
       "average_coverage_gui": "25-60%",
       "wrapper_project_coverage_ceiling": "65-75%"
@@ -398,10 +417,17 @@
       },
       {
         "name": "Credit-Card-Validator",
-        "mutants": 255,
-        "coverage": "100%",
+        "mutants": 272,
+        "coverage": "96%",
         "type": "algorithmic",
-        "equivalent": 0
+        "equivalent": 10,
+        "key_patterns": [
+          "DUPLICATE_SCAN_MUTUAL_MASK",
+          "BOUNDARY_VALUE",
+          "CONSTANT_RETURN",
+          "TERNARY_SYMMETRY",
+          "INFINITE_LOOP_TIMEOUT"
+        ]
       },
       {
         "name": "MementoX",

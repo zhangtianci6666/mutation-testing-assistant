@@ -332,3 +332,29 @@ public void setReserveRatio(double r) {
 **How to identify:** Two-stage computation where the *only* consumer applies `max()`/floor/threshold to the intermediate value, and no getter exposes the raw field. Trace the value to its single consumer before writing tests.
 
 **Action:** Document as equivalent with the convergence proof (both paths → MIN). Kill the *upper* clamp instead (`r > 0.5`), which is observable whenever the input exceeds the cap and the floor is below `cap * base`.
+
+---
+
+### P25: Duplicate Scan Mutual Masking (重复扫描互为兜底) 🟰
+
+**Symptom:** One whole block of loop mutants survives — `CONDITIONALS_BOUNDARY`, `REMOVE_CONDITIONALS_ORDER`, and the loop's equality check all SURVIVED — while a structurally identical block elsewhere in the same method is 100% killed.
+
+**Root Cause:** Two loops iterate the **same constant range with the same predicate**, and the second one is guarded by `if (!found)`. Weakening loop A only moves the hit to loop B; weakening loop B is unobservable because loop A already scanned the identical range and found nothing (the guard proves no match exists). Each side is individually unobservable, so every mutant inside the pair is equivalent.
+
+```java
+int[] IINRange = {506099, 506198, 650002, 650027};
+int IIN = parseIIN(creditCardNumberList, 6);
+
+for (int i = IINRange[0]; i <= IINRange[1]; i++) {   // scans 506099..506198
+    if (IIN == i) { hasAllowedIINRange = true; break; }
+}
+if (!hasAllowedIINRange) {
+    for (int i = IINRange[0]; i <= IINRange[1]; i++) { // BUG: same range again
+        if (IIN == i) { hasAllowedIINRange = true; break; }
+    }
+}
+```
+
+**How to identify:** Before writing tests for a surviving loop, diff the two loops' bounds and predicates. If both sides are literally identical, stop: no input can distinguish them. Verify the guard really is `if (!found)` (an unconditional second scan would be observable).
+
+**Action:** Write the proof once for the block ("loop B scans the identical closed range with the identical predicate; the `!found` guard means it can only run when no match exists in that range, so it can never match either"). Then report the duplication as a **real source defect** — in the credit-card case the second block was a copy-paste bug that silently disabled the `650002-650027` Verve range, so 16-digit Verve cards starting with 6500 were rejected. Equivalent mutants here are a symptom, not a testing gap.

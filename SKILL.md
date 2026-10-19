@@ -7,7 +7,7 @@ description: Use when analyzing PIT mutation testing reports with survived mutan
 
 ## Overview
 
-Systematic approach to analyze and kill survived PIT mutation testing mutants. Based on analysis of 26 Java projects, 10,418+ mutants, 86.5% average coverage on algorithmic/framework code. Covers 24 survival patterns, 11 mutation operators, 28 test patterns, and 9 Iron Rules.
+Systematic approach to analyze and kill survived PIT mutation testing mutants. Based on analysis of 26 Java projects, 10,418+ mutants, 86.5% average coverage on algorithmic/framework code. Covers 25 survival patterns, 11 mutation operators, 30 test patterns, and 9 Iron Rules.
 
 **Core principle:** Match survived mutants to known survival patterns, apply corresponding killing strategy. **Compilation verification is mandatory before any PIT run.**
 
@@ -93,7 +93,7 @@ Systematic approach to analyze and kill survived PIT mutation testing mutants. B
 
 ---
 
-## Quick Reference: Survival Patterns (24 patterns)
+## Quick Reference: Survival Patterns (25 patterns)
 
 | Pattern | Symptom | Action | Read |
 |---------|---------|--------|------|
@@ -121,6 +121,7 @@ Systematic approach to analyze and kill survived PIT mutation testing mutants. B
 | P22: Record Ctor NPE | Record compact constructor calls method accessing unassigned fields | Equivalent (SOURCE_BUG) — fields null until ctor completes | [survival-patterns.md](references/survival-patterns.md) |
 | P23: Fixed-Point Clamp | `if (x < L) x = L;` 的边界变异(`<`→`<=`)存活 | ⚔️ **先试 3 类逃生口**(±0.0 符号位 / 隐藏状态越界 / 容器身份)，全不成立才判等价 — 实测 20% 可杀 | [survival-patterns.md](references/survival-patterns.md) |
 | P24: Floor-Masked Lower Clamp | 下限钳制被后续 `if (r < MIN) r = MIN` 掩盖 | Equivalent — 被钳负值最终都被抬到同一 MIN | [survival-patterns.md](references/survival-patterns.md) |
+| P25: Duplicate Scan Masking | 某段循环的全部变异体存活，同方法另一段相同范围的循环已被杀 | Equivalent — 两段循环同范围同谓词且后段带 `!found` 守卫，互为兜底 | [survival-patterns.md](references/survival-patterns.md) |
 
 ---
 
@@ -234,7 +235,7 @@ Attack classes in ascending complexity order:
 WHILE (class has SURVIVED mutants that are NOT documented as equivalent with WHY):
     FOR EACH survivor:
         1. Read the source line where the mutation occurred
-        2. Identify WHY it's surviving (match to P1-P24 patterns)
+        2. Identify WHY it's surviving (match to P1-P25 patterns)
         3. If killable: pick the right killing technique → write test
         4. If possibly equivalent: exhaust ALL techniques before declaring
     write MORE tests → mvn test-compile (ZERO errors) → mvn pitest → read report
@@ -494,13 +495,13 @@ Identify what's NEW: new pattern? new project? correction to existing pattern? n
 
 | Situation | File | What's Inside |
 |-----------|------|---------------|
-| Survivor matched a pattern (P1-P24), need details | [survival-patterns.md](references/survival-patterns.md) | 24 patterns: symptom, root cause, code example, action |
+| Survivor matched a pattern (P1-P25), need details | [survival-patterns.md](references/survival-patterns.md) | 25 patterns: symptom, root cause, code example, action |
 | Need operator-specific killing code | [killing-strategies.md](references/killing-strategies.md) | 11 operators with code + quick-kill decision tree |
-| Need a specific test technique (reflection, counting subclass, etc.) | [test-patterns-catalog.md](references/test-patterns-catalog.md) | 23 reusable test patterns with code |
+| Need a specific test technique (reflection, counting subclass, etc.) | [test-patterns-catalog.md](references/test-patterns-catalog.md) | 30 reusable test patterns with code |
 | Working on B+Tree, binary tree, or recursive data structure | [bplustree-testing.md](references/bplustree-testing.md) | t-value selection, assertion escalation ladder, incremental building |
 | Working on AWT/Swing/GUI class | [awt-gui-testing.md](references/awt-gui-testing.md) | Headless compatibility, Graphics mock chaining, GUI subclass pattern |
 | Want to sanity-check your tests | [common-mistakes.md](references/common-mistakes.md) | 40+ common mistakes + 30+ red flags checklist |
-| Need to interpret PIT report metrics | [pit-metrics.md](references/pit-metrics.md) | Coverage statistics, diagnostic matrix, 24-project comparison table |
+| Need to interpret PIT report metrics | [pit-metrics.md](references/pit-metrics.md) | Coverage statistics, diagnostic matrix, 24-project comparison table, 100%-gap line locator |
 | Want to learn from similar past projects | [project-case-studies.md](references/project-case-studies.md) | 24 project deep-dives: strategies, equivalent mutants, lessons |
 | Need canonical operator/pattern/project data | [project-data.json](./project-data.json) | Structured JSON: 16 operators, 24 patterns, 26 projects |
 
