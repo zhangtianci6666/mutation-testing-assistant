@@ -54,7 +54,7 @@
 ### Credit-Card-Validator (272 mutants, 96% ceiling — 261 killed + 1 timed_out, 10 proven equivalent)
 - **代码结构:** 32 个业务类 = 1 个 Luhn 模 10 算法 + 24 个卡组织格式校验器（长度区间 + IIN 区间/前缀表）+ 日期解析/格式化工具类 + 类型分派器
 - **Kill策略:** 每个校验器覆盖长度区间两端与近邻（13/12/19/20 等）、IIN 区间四个端点；用「长度恰等于 range」的输入让 `parseIIN` 抛 `IndexOutOfBounds` 即可杀掉 `i < range` 边界体；Luhn 用独立参考实现对拍 14 组样本（含双倍后=10 的进位点）
-- **⚠️ 结论修正 (v2.9.0):** 本条目前记为 "255 mutants / 100% killed"，在给定 pom（`DEFAULTS`，`targetClasses=net.mooctest.*`）下**不成立**。全量 272 个变异体中 10 个为真等价，逐条有证明：Luhn L76（`sum +=`→`-=`，整除性对称）、Luhn L62（`tmp<10` 分支 `sumOfDigits` 恒等）、Validator L64（`return true` 前已 `if(!isValid) throw`）、Verve L53/L54/L60/L61/L62 共 7 个（两段循环同区间互为兜底，P25）
+- **⚠️ 结论修正 (v2.7.0):** 本条目前记为 "255 mutants / 100% killed"，在给定 pom（`DEFAULTS`，`targetClasses=net.mooctest.*`）下**不成立**。全量 272 个变异体中 10 个为真等价，逐条有证明：Luhn L76（`sum +=`→`-=`，整除性对称）、Luhn L62（`tmp<10` 分支 `sumOfDigits` 恒等）、Validator L64（`return true` 前已 `if(!isValid) throw`）、Verve L53/L54/L60/L61/L62 共 7 个（两段循环同区间互为兜底，P25）
 - **源码缺陷:** `VerveValidator` 第二段循环误用第一段区间（应为 `IINRange[2..3]`），导致 `650002-650027` 永不命中。对照实验（临时副本只改这 4 个字符）：Verve 8 killed → 11 killed → 补 `650002-650027` 测试后 15/15，总体 96% → 99%
 - **教训:** 看到「某项目 100%」的旧记录时，先确认 mutator 集、targetClasses 与源码版本是否一致；等价变异体率 3.7% 属算法类项目正常水位，不要为了凑 100% 硬写断言
 

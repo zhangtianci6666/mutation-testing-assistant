@@ -7,7 +7,7 @@ description: Use when analyzing PIT mutation testing reports with survived mutan
 
 ## Overview
 
-Systematic approach to analyze and kill survived PIT mutation testing mutants. Based on analysis of 26 Java projects, 10,418+ mutants, 86.5% average coverage on algorithmic/framework code. Covers 25 survival patterns, 11 mutation operators, 30 test patterns, and 9 Iron Rules.
+Systematic approach to analyze and kill survived PIT mutation testing mutants. Based on analysis of 26 Java projects, 10,435+ mutants, 86.5% average coverage on algorithmic/framework code. Covers 25 survival patterns, 16 mutation operators, 30 test patterns, and 9 Iron Rules.
 
 **Core principle:** Match survived mutants to known survival patterns, apply corresponding killing strategy. **Compilation verification is mandatory before any PIT run.**
 
@@ -62,7 +62,7 @@ Systematic approach to analyze and kill survived PIT mutation testing mutants. B
 │   8. If ALL survivors are proven equivalent (with WHY per survivor):      │
 │      → Output Iron Rule 9 table → announce NEXT class → GOTO step 2      │
 │   9. CRITICAL: "I think it's equivalent" ≠ PROVEN equivalent             │
-│      You must MATCH to a known pattern (P1-P24) OR provide logical       │
+│      You must MATCH to a known pattern (P1-P25) OR provide logical       │
 │      proof with code evidence. "Probably" is NOT a valid reason.          │
 │                                                                          │
 │   ────────────────────────────────────────────────────────────────────   │
@@ -190,7 +190,7 @@ Attack classes in ascending complexity order:
 
 **Iron Rule 8: Zero Source Modification.** Only create/modify test code. NEVER touch `src/main/java`, `pom.xml`, or build config.
 
-**Iron Rule 9: Equivalent Mutant Accountability — Mandatory WHY Per Survivor.** When a class cannot reach 100% kill rate after exhausting ALL killing techniques, produce a precise assessment for EVERY surviving mutant. Each entry MUST include: (1) specific code line and snippet, (2) logical proof of WHY it cannot be killed, (3) which pattern it matches (P1-P24), and (4) what techniques were tried and failed. "Probably equivalent" or "seems equivalent" is FORBIDDEN — only "proven equivalent" with evidence.
+**Iron Rule 9: Equivalent Mutant Accountability — Mandatory WHY Per Survivor.** When a class cannot reach 100% kill rate after exhausting ALL killing techniques, produce a precise assessment for EVERY surviving mutant. Each entry MUST include: (1) specific code line and snippet, (2) logical proof of WHY it cannot be killed, (3) which pattern it matches (P1-P25), and (4) what techniques were tried and failed. "Probably equivalent" or "seems equivalent" is FORBIDDEN — only "proven equivalent" with evidence.
 ```
 ┌──────────────────────────────────────────────────────────────────────┐
 │ Equivalent Mutant Report: {ClassName}                                 │
@@ -253,7 +253,7 @@ WHILE (class has SURVIVED mutants that are NOT documented as equivalent with WHY
 ✅ Class {X}/{N}: {ClassName} — {K} killed, {E} equivalent (each with WHY documented below). Self-opt: {no new knowledge | new P{N} added | {file} updated}. Advancing to next class.
 ```
 
-**The "Self-opt" field in the ✅ line is MANDATORY. It forces you to run through the Self-Optimization Steps 1-3 before claiming a class is done. If you cannot write this field, you haven't done self-optimization.**
+**The "Self-opt" field in the ✅ line is MANDATORY. 它只需要写"本类有哪些新发现 / 是否需要改技能"，不需要当场改文件。If you cannot write this field, you haven't done the post-mortem.**
 
 **If you end a response without one of these lines and survivors still exist, you have VIOLATED the loop.**
 
@@ -264,7 +264,7 @@ WHILE (class has SURVIVED mutants that are NOT documented as equivalent with WHY
 **Analysis phase (after each PIT run):**
 0. **MANDATORY — List EVERY survivor with WHY it survived:** For EACH survived mutant, state: operator, line number, and your hypothesis for WHY it survived. If you can't hypothesize why, you haven't read the source code carefully enough. Read the source line BEFORE writing any test.
 1. **Identify survived mutants** for CURRENT CLASS ONLY; distinguish SURVIVED from TIMED_OUT (TIMED_OUT = killed, P13 in [survival-patterns.md](references/survival-patterns.md))
-2. **Match to Survival Pattern** — see Quick Reference table above; for full details read [survival-patterns.md](references/survival-patterns.md). Every survivor MUST be matched: either to a known pattern (P1-P24) or identified as a new killable case.
+2. **Match to Survival Pattern** — see Quick Reference table above; for full details read [survival-patterns.md](references/survival-patterns.md). Every survivor MUST be matched: either to a known pattern (P1-P25) or identified as a new killable case.
 3. **Quick-kill: ArrayList capacity** — MATH on `new ArrayList<>(expr)` → P15 in [survival-patterns.md](references/survival-patterns.md), equivalent — explain WHY: "capacity is perf hint, same behavior regardless"
 3b. **钳制边界先试逃生口** — 遇到 P23（`if (x < L) x = L`）不要直接判等价：先试 ±0.0 符号位（`doubleToRawLongBits`）、隐藏状态越界（构造器/其他入口能否让不变量已越界）、容器身份；见 test-patterns-catalog Pattern 28。
 4. **Quick-kill: Probabilistic** — MATH on `Math.random()*N` → P19 in [survival-patterns.md](references/survival-patterns.md), loop-scan with reflection
@@ -313,7 +313,7 @@ WHILE (class has SURVIVED mutants that are NOT documented as equivalent with WHY
 │    ☐ Constructor argument field assertion (Pattern 17)                 │
 │                                                                        │
 │  ☐ Survivors NOT killable after exhausting ALL above?                  │
-│    → MUST match each to a specific pattern (P1-P24) WITH proof         │
+│    → MUST match each to a specific pattern (P1-P25) WITH proof         │
 │    → MUST output Iron Rule 9 table with WHY for every survivor         │
 │    → MUST explain: what was tried, why it failed, why it's proven eq. │
 │    → Only THEN can you ✅ ADVANCE with documented equivalents           │
@@ -334,13 +334,15 @@ WHILE (class has SURVIVED mutants that are NOT documented as equivalent with WHY
 
 **After gate passes:** Update class inventory (move 🔄), restart from Analysis step 1 for NEXT class.
 
-**⛔ AFTER EVERY CLASS (gate pass = trigger): Execute Self-Optimization Steps 1-3 below IMMEDIATELY — before announcing the next class. Do NOT skip this. The skill must learn from each class.**
+**⛔ AFTER EVERY CLASS (gate pass = trigger): 只记 Step 1 的 post-mortem 要点，不落笔改任何文件。全部类跑完后，再统一执行 Step 2-10 一次。**
 
 ---
 
 ## Self-Optimization Hook
 
-**This section is inline with the PER-CLASS GATE. After every class completes (gate passes), execute Steps 1-3 below BEFORE announcing the next class. After EVERY PROJECT completes (all classes done), execute the FULL AUDIT (Step 4) before declaring project finished.** The skill must learn from each project AND correct accumulated errors.
+**两档触发：单类完成 → 只记录（不改文件）；项目完成 / 会话收尾 / 用户要求更新技能 → 执行 Step 2→10（先落盘、再审计、最后回读校验）。** 全流程见 [self-optimization.md](references/self-optimization.md)。
+
+**⛔ 本机制内禁止执行 `git add / commit / push`**——版本控制由用户人工负责，不做任何快照或自动提交。
 
 ### Per-Class Self-Optimization (after EACH class gate passes)
 
@@ -428,7 +430,7 @@ Identify what's NEW: new pattern? new project? correction to existing pattern? n
 │     - Project comparison table up to date? → ADD new project row         │
 │                                                                          │
 │  ☐ SKILL.md:                                                             │
-│     - Quick Reference table: all 24 patterns still correct? → FIX any    │
+│     - Quick Reference table: all 25 patterns still correct? → FIX any    │
 │     - Overview line: counts (projects, mutants, coverage) accurate?     │
 │     - Launch Sequence: 5 rules still complete? → ADD if new rule needed │
 │     - Iron Rules: any need refinement based on project experience?       │
@@ -478,14 +480,22 @@ Identify what's NEW: new pattern? new project? correction to existing pattern? n
 
 ### Version Bump Rules
 
+**先读文件，再定版本。** 版本号从 `CHANGELOG.md` 最新条目与 `project-data.json` 的 `skill_metadata.version` **双读**，二者不一致时先修不一致，再谈升级。
+
 | Delta | Bump | Example |
 |-------|------|---------|
-| Stats only (no new patterns) | PATCH | v2.4.1 → v2.4.2 |
-| New pattern / test pattern / project | MINOR | v2.4.9 → v2.5.0 |
-| Multiple MINOR changes at once | MINOR (once) | |
-| Breaking restructure | MAJOR | v2.9.0 → v3.0.0 |
+| Stats only (no new patterns) | PATCH（+1 档） | v2.4.1 → v2.4.2 |
+| New pattern / test pattern / project | MINOR（+1 档） | v2.4.9 → v2.5.0 |
+| Breaking restructure | MAJOR | v2.7.0 → v3.0.0 |
 
-**Same calendar day = ONE version bump.** Add knowledge, don't duplicate it. Full details in [self-optimization.md](references/self-optimization.md).
+**铁律：一日一版 + 只进一档 + 三处联动。**
+
+1. **同日已有条目 → 就地追加**到该条目的 Added/Changed/Fixed，版本号不变；**禁止出现两个同日期条目**。
+2. **跨日 → 只 `+1` 一档**，按内容取 PATCH 或 MINOR；`v2.6.1 → v2.7.0` 合法，`v2.6.1 → v2.8.0`、`v2.8.0 → v2.9.0` 一律非法（跳号）。
+3. 一次改动必须同时写**三处**：`CHANGELOG.md` 条目、`project-data.json` 的 `version`、`project-data.json` 的 `changelog[0]`。只改 JSON 数组不写 `CHANGELOG.md` 视为未完成。
+4. 写完回读校验：`version == changelog 最新标题`、`changelog[0].startswith(version + ':')`、当日条目数 == 1。
+
+执行脚本与判定表见 [self-optimization.md Step 4a](references/self-optimization.md)；可直接运行只读校验器 `python scripts/next_version.py` 得到唯一合法版本号。
 
 ---
 
@@ -503,7 +513,7 @@ Identify what's NEW: new pattern? new project? correction to existing pattern? n
 | Want to sanity-check your tests | [common-mistakes.md](references/common-mistakes.md) | 40+ common mistakes + 30+ red flags checklist |
 | Need to interpret PIT report metrics | [pit-metrics.md](references/pit-metrics.md) | Coverage statistics, diagnostic matrix, 24-project comparison table, 100%-gap line locator |
 | Want to learn from similar past projects | [project-case-studies.md](references/project-case-studies.md) | 24 project deep-dives: strategies, equivalent mutants, lessons |
-| Need canonical operator/pattern/project data | [project-data.json](./project-data.json) | Structured JSON: 16 operators, 24 patterns, 26 projects |
+| Need canonical operator/pattern/project data | [project-data.json](./project-data.json) | Structured JSON: 16 operators, 25 patterns, 26 projects |
 
 ### Typical Read Sequence During a PIT Session
 
@@ -519,5 +529,5 @@ Identify what's NEW: new pattern? new project? correction to existing pattern? n
 5. Special domain (B+Tree / GUI / Wrapper project)
    → Read bplustree-testing.md OR awt-gui-testing.md OR project-case-studies.md
 6. After PIT completes for a class
-   → Execute Self-Optimization Hook above (Steps 1-4)
+   → Execute Self-Optimization Hook above (Step 1 → Step 10)
 ```

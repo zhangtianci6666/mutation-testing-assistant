@@ -1,6 +1,6 @@
-# Test Patterns Catalog (从24个项目提取)
+# Test Patterns Catalog (从26个项目提取)
 
-22 reusable test patterns for killing specific mutation types. Each pattern includes source project, use case, and code example.
+30 reusable test patterns for killing specific mutation types. Each pattern includes source project, use case, and code example.
 
 ---
 

@@ -7,26 +7,52 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-## [v2.8.0] - 2026-10-19
+## [v2.7.0] - 2026-10-19
 
-> 同日两次改动（新增 P23/P24 + 复检修正）按“同一天只升一次版本”规则合并为本条。
-
-### Fixed
-- **P23 判定过于绝对（重要修正）** — 初版写“钳制边界一律等价、不要再写测试”，被复检证伪：30 个存活体里有 6 个（20%）可杀。P23 现改为“先试 3 类逃生口，全不成立才判等价”，并附判定流程图
-- **`assertEquals(a,b,delta)` 看不见 ±0.0** — 补入逃生口①：`x < 0` 与 `x <= 0` 在 `x = -0.0` 处结论相反，必须用 `Double.doubleToRawLongBits`
+> **版本纪律：一日一版。** 同一自然日的多次改动累计合并为本条，编号只在上一已提交版本（v2.6.1）上递增一档（MINOR），不跳号。本条目 = 上午的 P23/P24/TP26-28 + 下午的 P25/TP29/TP30 与案例库修正。
 
 ### Added
-- **P23 Fixed-Point Clamp 三类逃生口** — ① ±0.0 符号位 ② 隐藏状态破坏不变量（构造器允许越界 → `releaseHours(0)` 从“无操作”变成“归一为上限”）③ 后续算术吸收（吸收掉才是真等价）
+- **P23 Fixed-Point Clamp 三类逃生口** — ① ±0.0 符号位 ② 隐藏状态破坏不变量（构造器允许越界 → `releaseHours(0)` 从"无操作"变成"归一为上限"）③ 后续算术吸收（吸收掉才是真等价）
 - **P24 Floor-Masked Lower Clamp** — 下限钳制被后续 `max()/floor` 吞掉，REMOVE_CONDITIONALS 不可观测
+- **P25 Duplicate Scan Mutual Masking** — 同方法两段循环同区间同谓词、后段带 `if(!found)` 守卫时，任一侧被削弱都会被另一侧补回，块内变异体互相不可观测；判定法是先 diff 两段循环再决定是否写测试，并把重复扫描作为源码缺陷上报（Credit-Card-Validator 的 `650002-650027` 整段因此被静默禁用）
 - **TP26 黄金序列 + 位布局反射** — 固定种子 PRNG 用黄金序列逐值精杀移位变异；时间相关 ID 用 `before==after` 毫秒窗口 + 反射读计数器反算
 - **TP27 异常消息区分** — 统一异常出口（catch 后重包装）会让 `assertThrows(类型)` 失效，必须升级到 `getMessage()`
 - **TP28 边界等价体三类逃生口** — 含三段可直接复用的测试代码
-- 10 条 common-mistakes：异常类型断言、ID/PRNG 弱断言、依赖链累加假设、`floorEntry` 语义、构造器 clamp 未核对、见钳制就判等价、用 delta 比较 ±0.0、只按合法区间设计输入、EMPTY_RETURNS 一律判等价
-- **Research-Project-Management-System 项目** — 14 业务类、305 变异体、281 击杀（92%）、JaCoCo 全 100%
+- **TP29 静态工具类实例化** — 只含静态方法的类，隐式构造器被 JaCoCo 记在类声明行；从未 `new` 过则行覆盖永远差这一行，`assertNotNull(new XxxUtil())` 一行补一个类
+- **TP30 对照实验取证（Counterfactual Probe）** — 项目外临时副本只改疑似源码缺陷、同一套测试重跑 PIT：存活体成批死亡即证明等价性源于源码而非测试不足（实测 96% → 99%）
+- **pit-metrics「Locating the Last 1%」** — 解析 `jacoco.xml` 的 `mi/mb` 逐行定位缺口，附 4 种缺口形态的判读与处置表
+- 12 条 common-mistakes（10 + 2）：异常类型断言、ID/PRNG 弱断言、依赖链累加假设、`floorEntry` 语义、构造器 clamp 未核对、见钳制就判等价、用 delta 比较 ±0.0、只按合法区间设计输入、EMPTY_RETURNS 一律判等价、99% 缺口全落在类声明行、3 个分支差 1%~2% 就硬凑
+- **Research-Project-Management-System** — 14 业务类、305 变异体、281 击杀（92%）、JaCoCo 全 100%
+- **Credit-Card-Validator 重跑** — 32 业务类、272 变异体、261 killed + 1 timed_out、10 个真等价（上限 96%）；单文件 67 个 `@Test`
+
+### Fixed
+- **P23 判定过于绝对（重要修正）** — 初版写"钳制边界一律等价、不要再写测试"，被复检证伪：30 个存活体里有 6 个（20%）可杀。P23 现改为"先试 3 类逃生口，全不成立才判等价"，并附判定流程图
+- **`assertEquals(a,b,delta)` 看不见 ±0.0** — 补入逃生口①：`x < 0` 与 `x <= 0` 在 `x = -0.0` 处结论相反，必须用 `Double.doubleToRawLongBits`
+- **`project-case-studies.md` 中 `Credit-Card-Validator (255 mutants, 100% killed)` 属错误结论** — 在给定 pom（`DEFAULTS` + `targetClasses=net.mooctest.*`）下实测 272 个变异体、10 个真等价、**上限 96.3%**。已改写为如实的 96% ceiling 并录入逐条证明与对照实验；该旧记录是"该项目可达 100%"误判的来源
+
+- **自优化机制的三处结构缺陷** — ① `Step 5` 全文审计排在写入之前，审计表却在检查尚未写出的 CHANGELOG/README/JSON，导致"审计通过即收工"而漏写 CHANGELOG（本次事故的直接成因）→ 重排为"先落盘 Step 3-8、再审计 Step 9"；② `Step 4a` 的回读校验引用未定义变量 `v_new`，复制即 `NameError`，"同日条目数==1"只有注释没有代码 → 改为可独立运行的校验代码；③ 检查清单漏 `changelog[0]` 与 `CHANGELOG.md` 的联动
+- **统计恒等式差 1** — `killed(7975) + survived(2459) = 10434 ≠ total(10435)`，survived 修正为 2460（Credit-Card-Validator 重跑含 1 个 TIMED_OUT）
+- **`test-patterns-catalog.md` 文首计数过时** — 写 "22 reusable test patterns"（实有 30）、"从24个项目提取"（实为 26）；同时暴露出该文件存在两套标题格式（`### 12.` 与 `### Pattern 24:`），校验脚本已兼容
 
 ### Changed
-- 项目总数: 25→26, 变异体总数: 10,113→10,418, 存活模式: 22→24, 测试模式: 25→28
-- 累计击杀 7,688→7,969，等价体 498→522
+- **自优化机制加固** — 两档触发（单类完成只记录 post-mortem、项目结束统一落盘）；Step 4 新增"统计 5 副本对齐"；审计后置为 Step 9；Step 10 回读校验；新增"新模式准入门槛"（实证 + 反证尝试 + 可判定 + 不复述）；**移除全部 git 快照/自动提交**，版本控制完全由人工负责
+- 新增 `scripts/check_stats.py`（只读）：校验 metadata / summary / projects 明细 / README / SKILL.md 五处统计与模式计数
+- **本次加固自身违反了两条新规则，已修** — ① 新增 P25 后 `SKILL.md` 仍有 4 处 `P1-P24`、1 处 `all 24 patterns`、1 处 `16 operators, 24 patterns` 未同步（正是"改模式必须连带改引用"要防的）；② `SKILL.md` Overview 仍写 `10,418+ mutants` 与 `11 mutation operators`（实为 10,435 / 16），而 Step 4 的 5 副本表当时没覆盖 Overview，`check_stats.py` 也没校验 → 两处均逃过检查
+- **`scripts/check_stats.py` 扩展** — 新增：SKILL.md Overview 的项目/变异体/运算符数、全文 `P1-P{N}` 与 `all N patterns` 硬编码上限、运算符数与 JSON `supported` 对齐；已用"故意写坏 P1-P25→P1-P24"做过回归自测（FAIL 后还原）
+- 本条为当日追加，版本号保持 v2.7.0（一日一版，不新开版本）
+- 项目 25→26；变异体 10,113→10,435；存活模式 22→25；测试模式 25→30
+- 累计击杀 7,688→7,975；等价体 498→532（等价率 3.7%）
+- 版本号纠正：本条目曾误记为 v2.8.0/v2.9.0，现按"一日一版、不跳号"收敛为 v2.7.0（同日改动已全部并入）
+
+---
+
+## [v2.6.1] - 2026-07-23
+
+### Added
+- **Online-Edu 在线教育平台项目** (1,388 mutants, 43% mutation, 85% line, 9 业务类) — Spring Boot 3.5 服务架构（6 个大型 Service：考试评分/学习进度/报名资格审查/退款策略/高级定价/排课调度 + 3 个小型 Service）
+- 单文件聚合 ~5,400 行、450+ 测试；PIT 4%→34%→43%，JaCoCo 9%→72%→85% 行 / 73% 分支 / 96% 方法
+- **包级私有 Spring `@Bean` 反射覆盖技术**；Record 紧凑构造器 `List.copyOf` 拒绝 null 造成验证死分支；验证主导死分支（P1：`maximumPoints.signum()==0` 被前置验证屏蔽）
+- 3 条 common-mistakes：`Mockito.when` 非 mock 对象、类型推断 `Set.of()/List.of()`、sed 批处理破坏 Java 源码
 
 ---
 

@@ -1,6 +1,6 @@
 # Mutation Testing Assistant
 
-> 基于 26 个 Java 项目、10,418 个变异体实战经验提炼的 PIT 变异测试知识库——系统化分析存活变异体、识别等价变异体、编写杀活测试。
+> 基于 26 个 Java 项目、10,435 个变异体实战经验提炼的 PIT 变异测试知识库——系统化分析存活变异体、识别等价变异体、编写杀活测试。
 
 [![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](LICENSE)
 [![Java](https://img.shields.io/badge/Java-8%2B-orange)](https://adoptium.net/)
@@ -11,10 +11,10 @@
 
 ## 这是什么？
 
-一套完整的 **PIT 变异测试实战方法论**，提炼自 24 个真实 Java 项目的变异测试经验——涵盖算法类（B+Tree、链表、加密、排序、变位词、Brainfuck解释器）、CLI 解析器、GUI/Animation、包装器/库封装、框架适配器等多种项目类型。帮助 Java 开发者：
+一套完整的 **PIT 变异测试实战方法论**，提炼自 26 个真实 Java 项目的变异测试经验——涵盖算法类（B+Tree、链表、加密、排序、变位词、Brainfuck解释器）、CLI 解析器、GUI/Animation、包装器/库封装、框架适配器等多种项目类型。帮助 Java 开发者：
 
-- 🎯 **快速定位**——将存活变异体匹配到 24 个已知存活模式
-- ⚡ **精准杀活**——使用 28 个测试模式 + 反射/内部状态探查等高级技巧
+- 🎯 **快速定位**——将存活变异体匹配到 25 个已知存活模式
+- ⚡ **精准杀活**——使用 30 个测试模式 + 反射/内部状态探查等高级技巧
 - 🛡️ **避免浪费**——识别 15 种真等价变异体，不投入无效测试
 - 📊 **读懂指标**——理解 Line Coverage / Mutation Coverage / Test Strength 的关系
 
@@ -22,7 +22,7 @@
 
 1. **运行 PIT** 生成变异测试报告（先于任何源码分析）
 2. **打开报告** 查看 SURVIVED 变异体列表
-3. **匹配模式** 对照 [Quick Reference](#quick-reference-survival-patterns) 24 个存活模式
+3. **匹配模式** 对照 [Quick Reference](#quick-reference-survival-patterns) 25 个存活模式
 4. **应用策略** 按对应 killing rule 编写测试
 5. **重跑 PIT** 验证杀活效果
 
@@ -131,11 +131,11 @@ Skill 会自动：列出类清单 → 逐类写测试 → 编译 → PIT → 分
 
 ```
 Tier 1 (Always):    description 字段 → 永远在上下文中
-Tier 2 (Trigger):   SKILL.md (281行) → 核心协议 + 路由表，触发时加载
+Tier 2 (Trigger):   SKILL.md (523行) → 核心协议 + 路由表，触发时加载
 Tier 3 (On-Demand): references/*.md  → 详细内容，用到才读
 ```
 
-### 路由表（SKILL.md，281 行）
+### 路由表（SKILL.md，523 行）
 
 SKILL.md 不包含详细内容，而是告诉模型**什么时候去读哪个文件**：
 
@@ -143,7 +143,7 @@ SKILL.md 不包含详细内容，而是告诉模型**什么时候去读哪个文
 |-------------|-----------|
 | 变异体匹配到某个模式，需要详情 | [survival-patterns.md](references/survival-patterns.md) — 22个模式：症状、根因、代码、行动 |
 | 需要某种操作符的杀活代码 | [killing-strategies.md](references/killing-strategies.md) — 11种操作符 + 快速杀活决策树 |
-| 需要特定测试技巧（反射、计数子类等） | [test-patterns-catalog.md](references/test-patterns-catalog.md) — 28个测试模式 + 代码 |
+| 需要特定测试技巧（反射、计数子类等） | [test-patterns-catalog.md](references/test-patterns-catalog.md) — 30个测试模式 + 代码 |
 | 处理 B+Tree / 递归数据结构 | [bplustree-testing.md](references/bplustree-testing.md) — t值选择、断言升级阶梯 |
 | 处理 AWT/Swing/GUI 类 | [awt-gui-testing.md](references/awt-gui-testing.md) — Headless兼容、Graphics mock |
 | 想对测试做 sanity check | [common-mistakes.md](references/common-mistakes.md) — 46+常见错误 + 36+红旗检查 |
@@ -153,14 +153,14 @@ SKILL.md 不包含详细内容，而是告诉模型**什么时候去读哪个文
 
 ## 项目数据
 
-来自 24 个 Java 项目的真实变异测试数据：
+来自 26 个 Java 项目的真实变异测试数据：
 
 | 指标 | 数值 |
 |------|------|
-| 分析项目数 | 24 |
-| 总变异体数 | 8,725 |
+| 分析项目数 | 26 |
+| 总变异体数 | 10,435 |
 | 算法类平均覆盖率 | 87.3% |
-| 等价变异体数 | 430 |
+| 等价变异体数 | 532 |
 | GUI/Animation 可测上限 | 25-60% |
 | 包装器/库封装类可测上限 | 65-75% |
 
